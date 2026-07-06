@@ -358,6 +358,19 @@
     padding:30px;
     color:var(--text-muted);
   }
+  .mark-yes-label{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size:0.85rem;
+    color:var(--text-secondary);
+    cursor:pointer;
+  }
+  .mark-yes-label input[type=checkbox]{
+    width:16px;height:16px;
+    accent-color:var(--grad-success1);
+    cursor:pointer;
+  }
 
   #toastContainer{
     position:fixed;
@@ -683,7 +696,7 @@
     <div class="section-title">🚫 Items Marked Available = No</div>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>#</th><th>Item Name</th><th>Matched Keyword</th></tr></thead>
+        <thead><tr><th>#</th><th>Item Name</th><th>Matched Keyword</th><th>Override</th></tr></thead>
         <tbody id="dineInMarkedTableBody"></tbody>
       </table>
     </div>
@@ -1292,8 +1305,6 @@ el.resetBtn.addEventListener("click", resetAll);
 // Default non-food / non-eatable keyword list (user-provided list + additional common POS items)
 const DEFAULT_NONFOOD_KEYWORDS = [
 "Tissue","Tissue Paper","Paper Napkin","Napkin","Wet Wipe","Wet Wipes","Wipe","Toothpick",
-"Charge","Extra Charge","Service Charge","Packing Charge","Packaging Charge","Delivery Charge",
-"Container","Disposable Container","Takeaway Box","Pizza Box","Cake Box","Burger Box",
 "Straw","Paper Straw","Plastic Straw","Spoon","Plastic Spoon","Wooden Spoon","Fork","Knife",
 "Chopsticks","Plate","Disposable Plate","Disposable Bowl","Glass","Disposable Glass",
 "Cup","Disposable Cup","Cutlery","Disposable Cutlery","Tray","Carry Bag","Paper Bag",
@@ -1319,7 +1330,7 @@ const DEFAULT_NONFOOD_KEYWORDS = [
 "Hukka","Shisha","Vape","E-Cigarette","Nicotine","Beer","Draft Beer","Draught Beer","Craft Beer",
 "Lager","Ale","Stout","IPA","Pilsner","Wheat Beer","Strong Beer","Light Beer","Pint","Mug Beer",
 "Pitcher Beer","Tower Beer","Wine","Red Wine","White Wine","Rose Wine","Rosé","Sparkling Wine",
-"Champagne","Prosecco","Sangria","Whisky","Whiskey","Scotch","Single Malt","Double Malt",
+"Champagne","Prosecco","Sangria","Whisky","Whiskey","Single Malt","Double Malt",
 "Blended Whisky","Bourbon","Rye Whiskey","Irish Whiskey","Japanese Whisky","Rum","Dark Rum",
 "White Rum","Gold Rum","Spiced Rum","Old Monk","Bacardi","Vodka","Flavoured Vodka","Absolut",
 "Smirnoff","Grey Goose","Gin","London Dry Gin","Bombay Gin","Tequila","Silver Tequila",
@@ -1502,7 +1513,7 @@ async function runDineInProcess() {
       if (finalAvailIdx !== undefined) {
         newRow[finalAvailIdx] = "No";
       }
-      marked.push({ name: itemName, keyword: matchedKeyword });
+      marked.push({ name: itemName, keyword: matchedKeyword, rowIndex: i, availIdx: finalAvailIdx });
     }
     finalRows[i] = newRow;
   }
@@ -1538,17 +1549,36 @@ function displayDineInResults(elapsedMs) {
 
   dineEl.markedTableBody.innerHTML = "";
   if (dineInState.markedList.length === 0) {
-    dineEl.markedTableBody.innerHTML = `<tr><td colspan="3" class="empty-state">No non-food items detected with the current keyword list.</td></tr>`;
+    dineEl.markedTableBody.innerHTML = `<tr><td colspan="4" class="empty-state">No non-food items detected with the current keyword list.</td></tr>`;
   } else {
     const frag = document.createDocumentFragment();
     dineInState.markedList.forEach((item, i) => {
       const tr = document.createElement("tr");
-      tr.innerHTML = `<td>${i + 1}</td><td>${escapeHtml(item.name)}</td><td>${escapeHtml(item.keyword)}</td>`;
+      const disabled = item.availIdx === undefined ? "disabled" : "";
+      tr.innerHTML = `<td>${i + 1}</td><td>${escapeHtml(item.name)}</td><td>${escapeHtml(item.keyword)}</td>
+        <td><label class="mark-yes-label">
+          <input type="checkbox" class="markYesCheckbox" data-marked-idx="${i}" ${disabled}> Mark Yes
+        </label></td>`;
       frag.appendChild(tr);
     });
     dineEl.markedTableBody.appendChild(frag);
   }
 }
+
+// Toggle a single marked item's Available value between "No" (default) and "Yes" (manual override)
+function toggleDineInAvailability(markedIdx, markAsYes) {
+  const item = dineInState.markedList[markedIdx];
+  if (!item || item.availIdx === undefined) return;
+  const row = dineInState.finalRows[item.rowIndex];
+  row[item.availIdx] = markAsYes ? "Yes" : "No";
+}
+
+// Delegated change listener for all "Mark Yes" checkboxes in the marked-items table
+dineEl.markedTableBody.addEventListener("change", (e) => {
+  if (!e.target.classList.contains("markYesCheckbox")) return;
+  const idx = parseInt(e.target.getAttribute("data-marked-idx"), 10);
+  toggleDineInAvailability(idx, e.target.checked);
+});
 
 function generateDineInCSV() {
   const lines = [dineInState.finalHeaders.map(escapeCSVField).join(",")];
