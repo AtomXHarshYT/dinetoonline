@@ -696,7 +696,7 @@
     <div class="section-title">🚫 Items Marked Available = No</div>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>#</th><th>Item Name</th><th>Matched Keyword</th><th>Override</th></tr></thead>
+        <thead><tr><th>#</th><th>Item Name</th><th>Reason</th><th>Override</th></tr></thead>
         <tbody id="dineInMarkedTableBody"></tbody>
       </table>
     </div>
@@ -1336,11 +1336,11 @@ const DEFAULT_NONFOOD_KEYWORDS = [
 "Smirnoff","Grey Goose","Gin","London Dry Gin","Bombay Gin","Tequila","Silver Tequila",
 "Gold Tequila","Reposado","Anejo","Añejo","Brandy","Cognac","Liqueur","Baileys","Kahlua",
 "Kahlúa","Malibu","Triple Sec","Cointreau","Amaretto","Sambuca","Jagermeister","Jägermeister",
-"Mead","Cider","Hard Cider","Sake","Soju","Alcoholic Cocktail","Mojito","Margarita",
+"Mead","Cider","Hard Cider","Sake","Soju","charge","container","Alcoholic Cocktail","Mojito","Margarita",
 "Martini","Cosmopolitan","Bloody Mary","Long Island Iced Tea","Old Fashioned","Manhattan",
 "Negroni","Daiquiri","Pina Colada","Piña Colada","Whiskey Sour","Gin and Tonic","Gin & Tonic",
 "Rum and Coke","Rum & Coke","Screwdriver","Peg","Small Peg","Large Peg","Quarter","Half Bottle",
-"Full Bottle","Mini Bottle","Shooter","Alcohol","Liquor","Spirit",
+"Full Bottle","Mini Bottle","Shot","Shots","Shooter","Alcohol","Liquor","Spirit",
 "Spirits","Hard Liquor","Hard Drink","IMFL","Imported Liquor","Indian Made Foreign Liquor",
 "Birthday Cake Topper","Cake Topper","Birthday Candle","Number Candle","Sparkle Candle",
 "Sparkler","Party Popper","Birthday Cap","Birthday Hat","Party Hat","Birthday Banner",
@@ -1475,6 +1475,8 @@ async function runDineInProcess() {
   const idx = dineInState.headerIndex;
   const nameIdx = idx["item name"];
   const availIdx = idx["available"]; // may be undefined
+  const priceIdx = idx["price"];
+  const itemTypeIdx = idx["item type"]; // may be undefined
   await sleep(150);
 
   dineEl.progressFill.style.width = "40%";
@@ -1492,7 +1494,25 @@ async function runDineInProcess() {
   await sleep(150);
 
   dineEl.progressFill.style.width = "80%";
-  dineEl.progressStatus.textContent = "Flagging Non-Food Items...";
+  dineEl.progressStatus.textContent = "Flagging Non-Food & Zero-Price Items...";
+
+  // Pre-compute: for every "item" row, does it have "variation" rows directly below it?
+  // If yes, that parent row's own price (often 0) must NOT trigger the zero-price rule.
+  const hasVariationBelow = new Array(rows.length).fill(false);
+  if (itemTypeIdx !== undefined) {
+    for (let i = 0; i < rows.length; i++) {
+      const rowType = normalizeName(getCell(rows[i], itemTypeIdx));
+      if (rowType !== "item") continue;
+      let j = i + 1;
+      let found = false;
+      while (j < rows.length && normalizeName(getCell(rows[j], itemTypeIdx)) === "variation") {
+        found = true;
+        j++;
+      }
+      hasVariationBelow[i] = found;
+    }
+  }
+
   const marked = [];
   const finalRows = new Array(rows.length);
   for (let i = 0; i < rows.length; i++) {
@@ -1506,14 +1526,27 @@ async function runDineInProcess() {
     const itemName = getCell(srcRow, nameIdx);
     const matchedKeyword = findNonFoodMatch(itemName, keywords);
 
-    if (matchedKeyword) {
+    // Zero-price check, skipped for "item" rows that have variations below them
+    let zeroPriceHit = false;
+    if (priceIdx !== undefined) {
+      const rowType = itemTypeIdx !== undefined ? normalizeName(getCell(srcRow, itemTypeIdx)) : "";
+      const isParentWithVariations = rowType === "item" && hasVariationBelow[i];
+      if (!isParentWithVariations) {
+        const priceVal = parseFloat(getCell(srcRow, priceIdx));
+        zeroPriceHit = !isNaN(priceVal) && priceVal === 0;
+      }
+    }
+
+    const reason = matchedKeyword ? matchedKeyword : (zeroPriceHit ? "Zero Price" : null);
+
+    if (reason) {
       // Available column index shifts by +1 if it was after the insert point
       let finalAvailIdx = availIdx;
       if (finalAvailIdx !== undefined && finalAvailIdx >= insertAt) finalAvailIdx += 1;
       if (finalAvailIdx !== undefined) {
         newRow[finalAvailIdx] = "No";
       }
-      marked.push({ name: itemName, keyword: matchedKeyword, rowIndex: i, availIdx: finalAvailIdx });
+      marked.push({ name: itemName, keyword: reason, rowIndex: i, availIdx: finalAvailIdx });
     }
     finalRows[i] = newRow;
   }
