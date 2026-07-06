@@ -403,6 +403,48 @@
     font-size:0.85rem;
   }
   footer strong{color:var(--text-secondary);}
+
+  .page{display:none;}
+  .page.active{display:block;animation:pageFadeIn 0.35s ease;}
+  @keyframes pageFadeIn{
+    from{opacity:0;transform:translateY(8px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+
+  .divider{
+    display:flex;
+    align-items:center;
+    text-align:center;
+    color:var(--text-muted);
+    font-size:0.8rem;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    margin:44px 0 28px;
+  }
+  .divider::before, .divider::after{
+    content:'';
+    flex:1;
+    border-bottom:1px solid var(--glass-border);
+  }
+  .divider span{padding:0 16px;}
+
+  #nonFoodKeywords{
+    width:100%;
+    min-height:160px;
+    max-height:260px;
+    padding:14px 16px;
+    border-radius:var(--radius-sm);
+    border:1px solid var(--glass-border);
+    background:rgba(255,255,255,0.05);
+    color:var(--text-primary);
+    font-size:0.85rem;
+    font-family:'Consolas',monospace;
+    line-height:1.6;
+    resize:vertical;
+    outline:none;
+    transition:border-color 0.2s ease;
+  }
+  #nonFoodKeywords:focus{border-color:var(--grad-1);background:rgba(255,255,255,0.08);}
 </style>
 </head>
 <body>
@@ -414,6 +456,8 @@
     <h1>Menu Price Merger</h1>
     <p>Offline → Online Price Synchronizer</p>
   </header>
+
+  <div id="page-merge" class="page active">
 
   <div class="glass-card info-banner">
     <span class="ic">ℹ️</span>
@@ -442,6 +486,10 @@
       <div class="upload-sub">Availability source • Drag &amp; drop or click to upload</div>
       <div class="upload-filename" id="onlineFilename" style="display:none;"></div>
     </div>
+  </div>
+
+  <div class="controls" style="margin-bottom:28px;">
+    <button class="btn btn-secondary" id="openDineInBtn">🍽️ Don't have an Online Menu? Open Dine-in Only Processor →</button>
   </div>
 
   <!-- ============ SUFFIX CODE CONFIG ============ -->
@@ -544,6 +592,104 @@
       </table>
     </div>
   </div>
+
+  </div><!-- /#page-merge -->
+
+  <div id="page-dinein" class="page">
+
+  <div class="controls" style="margin-bottom:24px;">
+    <button class="btn btn-secondary" id="backToMergeBtn">← Back to Merge Tool</button>
+  </div>
+
+  <!-- ============ DINE-IN ONLY PROCESSOR SECTION ============ -->
+  <div class="glass-card info-banner">
+    <span class="ic">🍽️</span>
+    <div>
+      <b>Dine-in Only Processor</b> — use this when you don't have an Online Menu file at all, just the Offline (Dine-in) Menu.
+      It adds an <b>Area Display Name</b> column right after Online Display Name (left blank), and automatically marks known
+      <b>non-food items</b> (tissues, cutlery, packaging charges, alcohol, decoration/event charges, etc.) as <b>Available = No</b>.
+      Everything else keeps its original Available value. This works completely independently of the merge tool above.
+    </div>
+  </div>
+
+  <div class="glass-card upload-card" id="dineInCard" style="max-width:500px;margin:0 auto 24px;">
+    <input type="file" id="dineInInput" accept=".csv">
+    <span class="upload-icon">🍽️</span>
+    <div class="upload-title">Dine-in Menu CSV</div>
+    <div class="upload-sub">Drag &amp; drop or click to upload</div>
+    <div class="upload-filename" id="dineInFilename" style="display:none;"></div>
+  </div>
+
+  <div class="glass-card config-section">
+    <div class="config-label" style="margin-bottom:10px;">🚫 Non-Food / Non-Eatable Item Keywords (editable)</div>
+    <div class="config-hint" style="margin-bottom:12px;">
+      One term per line. Matching is <b>whole-word</b> — it catches items like "Extra Tissue Paper" or "Packing Charge - Small" too.
+      Add, remove, or edit lines to fit your menu. Some short/common words (e.g. "Bowl", "Cup", "Glass", "Straw") can occasionally
+      match a real dish name (like "Rice Bowl") — remove them from the list below if that applies to your menu.
+    </div>
+    <textarea id="nonFoodKeywords" spellcheck="false"></textarea>
+  </div>
+
+  <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:20px;">
+    <div class="glass-card stat-card">
+      <div class="stat-value" id="statDineInTotal">0</div>
+      <div class="stat-label">Total Items</div>
+    </div>
+    <div class="glass-card stat-card">
+      <div class="stat-value" id="statDineInMarked">0</div>
+      <div class="stat-label">Marked Non-Food (No)</div>
+    </div>
+    <div class="glass-card stat-card">
+      <div class="stat-value" id="statDineInKeywords">0</div>
+      <div class="stat-label">Keywords Loaded</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="btn btn-primary" id="dineInProcessBtn" disabled>⚡ Process Dine-in Menu</button>
+    <button class="btn btn-secondary" id="dineInResetBtn">↺ Reset</button>
+    <button class="btn btn-success" id="dineInDownloadBtn" disabled>⬇ Download Processed CSV</button>
+  </div>
+
+  <div class="glass-card progress-section" id="dineInProgressSection">
+    <div class="progress-label">
+      <span>Processing</span>
+      <span id="dineInProgressStatus">Preparing...</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="dineInProgressFill"></div>
+    </div>
+  </div>
+
+  <div class="glass-card result-section" id="dineInResultSection">
+    <div class="result-header">
+      <div class="check-icon">✓</div>
+      <h2>Dine-in Menu Processed</h2>
+    </div>
+    <div class="result-summary" style="grid-template-columns:repeat(3,1fr);">
+      <div class="result-item">
+        <div class="val" id="dineInResTotal">0</div>
+        <div class="lbl">Total Items</div>
+      </div>
+      <div class="result-item">
+        <div class="val" id="dineInResMarked">0</div>
+        <div class="lbl">Marked No</div>
+      </div>
+      <div class="result-item">
+        <div class="val" id="dineInResTime">0ms</div>
+        <div class="lbl">Processing Time</div>
+      </div>
+    </div>
+    <div class="section-title">🚫 Items Marked Available = No</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Item Name</th><th>Matched Keyword</th></tr></thead>
+        <tbody id="dineInMarkedTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  </div><!-- /#page-dinein -->
 
   <footer>
     <strong>Menu Price Merger</strong><br>
@@ -1137,9 +1283,337 @@ function resetAll() {
 el.resetBtn.addEventListener("click", resetAll);
 
 /* ======================================================================
+   DINE-IN ONLY PROCESSOR — independent tool (no online file needed)
+   Adds an "Area Display Name" column after "Online Display Name", and
+   marks known non-food / non-eatable items as Available = "No" using
+   whole-word matching against an editable keyword list.
+====================================================================== */
+
+// Default non-food / non-eatable keyword list (user-provided list + additional common POS items)
+const DEFAULT_NONFOOD_KEYWORDS = [
+"Tissue","Tissue Paper","Paper Napkin","Napkin","Wet Wipe","Wet Wipes","Wipe","Toothpick",
+"Straw","Paper Straw","Plastic Straw","Spoon","Plastic Spoon","Wooden Spoon","Fork","Knife",
+"Chopsticks","Plate","Disposable Plate","Bowl","Disposable Bowl","Glass","Disposable Glass",
+"Cup","Disposable Cup","Cutlery","Disposable Cutlery","Tray","Carry Bag","Paper Bag",
+"Plastic Bag","Shopping Bag","Food Container","Container","Disposable Container","Packaging",
+"Packaging Charge","Packing","Packing Charge","Parcel Charge","Parcel Packing","Takeaway Box",
+"Pizza Box","Cake Box","Burger Box","Bottle Deposit","Jar Deposit","Deposit","Security Deposit",
+"Container Deposit","Delivery Charge","Packing Fee","Packaging Fee","Handling Charge",
+"Convenience Fee","Service Charge","Cover Charge","Entry Fee","Reservation Fee","Table Booking",
+"Table Reservation","Birthday Decoration","Anniversary Decoration","Decoration Charge",
+"Balloon Decoration","Flower Decoration","Candle Light Dinner","Live Music Charge","DJ Charge",
+"Banquet Charge","Hall Rent","Room Charge","Extra Plate","Extra Bowl","Extra Spoon","Extra Fork",
+"Extra Knife","Extra Cup","Extra Glass","Ice Charge","Cooling Charge","Empty Glass","Empty Bottle",
+"Match Box","Lighter","Gift Voucher","Gift Card","Membership Card","Loyalty Card","Recharge Coupon",
+"Coupon Redemption","Wallet Redemption","Token","Discount","Discount Amount","Flat Discount",
+"Percentage Discount","Round Off","Roundoff","Adjustment","Cash Adjustment","Credit Adjustment",
+"Debit Adjustment","Advance","Advance Payment","Balance","Refund","Refund Amount","Credit Note",
+"Complimentary","Comp","Staff Meal","Employee Meal","Staff Discount","Dummy Item","Test Item",
+"Sample Item","Cancel Item","Deleted Item","POS Adjustment","Manual Adjustment","Raw Rice",
+"Rice Bag","Flour","Maida","Atta","Cooking Oil","Refined Oil","Gas Cylinder","LPG Cylinder",
+"Detergent","Cleaning Powder","Dishwash Liquid","Sanitizer","Hand Sanitizer","Gloves","Apron",
+"Kitchen Cloth","Garbage Bag","Cleaning Charge","Maintenance Charge","Service Fee","Cigarette",
+"Cigarettes","Cigar","Beedi","Bidi","Tobacco","Chewing Tobacco","Gutkha","Pan Masala","Hookah",
+"Hukka","Shisha","Vape","E-Cigarette","Nicotine","Beer","Draft Beer","Draught Beer","Craft Beer",
+"Lager","Ale","Stout","IPA","Pilsner","Wheat Beer","Strong Beer","Light Beer","Pint","Mug Beer",
+"Pitcher Beer","Tower Beer","Wine","Red Wine","White Wine","Rose Wine","Rosé","Sparkling Wine",
+"Champagne","Prosecco","Sangria","Whisky","Whiskey","Scotch","Single Malt","Double Malt",
+"Blended Whisky","Bourbon","Rye Whiskey","Irish Whiskey","Japanese Whisky","Rum","Dark Rum",
+"White Rum","Gold Rum","Spiced Rum","Old Monk","Bacardi","Vodka","Flavoured Vodka","Absolut",
+"Smirnoff","Grey Goose","Gin","London Dry Gin","Bombay Gin","Tequila","Silver Tequila",
+"Gold Tequila","Reposado","Anejo","Añejo","Brandy","Cognac","Liqueur","Baileys","Kahlua",
+"Kahlúa","Malibu","Triple Sec","Cointreau","Amaretto","Sambuca","Jagermeister","Jägermeister",
+"Mead","Cider","Hard Cider","Sake","Soju","Cocktail","Alcoholic Cocktail","Mojito","Margarita",
+"Martini","Cosmopolitan","Bloody Mary","Long Island Iced Tea","Old Fashioned","Manhattan",
+"Negroni","Daiquiri","Pina Colada","Piña Colada","Whiskey Sour","Gin and Tonic","Gin & Tonic",
+"Rum and Coke","Rum & Coke","Screwdriver","Peg","Small Peg","Large Peg","Quarter","Half Bottle",
+"Full Bottle","Bottle","Mini Bottle","Shot","Shots","Shooter","Alcohol","Liquor","Spirit",
+"Spirits","Hard Liquor","Hard Drink","IMFL","Imported Liquor","Indian Made Foreign Liquor",
+"Birthday Cake Topper","Cake Topper","Birthday Candle","Number Candle","Sparkle Candle",
+"Sparkler","Party Popper","Birthday Cap","Birthday Hat","Party Hat","Birthday Banner",
+"Happy Birthday Banner","Anniversary Banner","Welcome Banner","Balloon","Helium Balloon",
+"Foil Balloon","Latex Balloon","Balloon Bouquet","Balloon Arch","Flower Bouquet","Rose Bouquet",
+"Garland","Garland Decoration","Party Decoration","Baby Shower Decoration","Bride To Be Decoration",
+"Groom To Be Decoration","Wedding Decoration","Engagement Decoration","Stage Decoration",
+"Table Decoration","Room Decoration","Cabana Decoration","Canopy Decoration","Romantic Decoration",
+"Candle Light Decoration","Candle Light Dinner Setup","LED Decoration","Fairy Lights","LED Lights",
+"Photo Booth","Photo Frame","Props","Birthday Props","Party Props","Confetti","Confetti Cannon",
+"Ribbon","Gift Wrap","Gift Packing","Gift Box","Gift Bag","Greeting Card","Birthday Card",
+"Anniversary Card","Invitation Card","Return Gift","Party Kit","Celebration Kit","Decoration Kit",
+"Event Setup","Event Charge","Celebration Charge","Cake Cutting Charge","Photography Charge",
+"Videography Charge","Music Charge","Live Band","Live Singer","Magic Show","Mascot",
+"Clown Service","Anchor Service","Emcee","Host Service","Sound System","Speaker Rent","Mic Rent",
+"Projector Rent","Screen Rent","Table Rent","Chair Rent","Tent Rent","Hall Decoration",
+"Banquet Decoration","Room Rent","Banquet Hall","Conference Hall","Meeting Room",
+"Reservation Charge","Advance Booking","Booking Charge",
+/* --- additional common non-food / accessory / charge items --- */
+"Ear Buds","Cotton Buds","Cotton Swab","Sanitary Napkin","Sanitary Pad","Face Mask","Mask",
+"Hand Gloves","Kitchen Towel","Paper Towel","Kitchen Roll","Toilet Paper","Toilet Roll",
+"Baby Bib","Bib","High Chair","Booster Seat","Aluminium Foil","Foil Paper","Cling Wrap",
+"Cling Film","Butter Paper","Wax Paper","Silver Foil","Doggy Bag","Courier Charge",
+"Delivery Fee","GST","Service Tax","VAT","CGST","SGST","Round Off Charge","Ice Bag","Dry Ice",
+"Charcoal","Hookah Coal","Shisha Coal","Flavour Charge","Cake Candle","Sparkling Candle",
+"Cake Knife","Return Gift Box","Wet Tissue","Moist Tissue","Air Freshener","Room Freshener",
+"Mosquito Repellent","Mosquito Coil","Insect Repellent","First Aid","Band Aid","Newspaper",
+"Magazine","SIM Card","Recharge Voucher","Data Card","Umbrella","Raincoat","Torch","Candle",
+"Match Stick","Matches","Lighter Gas","Incense Stick","Agarbatti","Room Spray","Perfume",
+"Deodorant","Toothbrush","Comb","Shaving Kit","Razor","Shower Cap","Bathroom Slipper",
+"Slipper","Hanger","Laundry Bag","Iron Charge","Wifi Charge","Internet Charge","Parking Charge",
+"Valet Charge","Corkage Charge","Corkage Fee","Music License Fee","AC Charge","Generator Charge",
+"Power Backup Charge"
+];
+
+const dineInState = {
+  fileData: null,        // { headers: [], rows: [[...]] }
+  headerIndex: {},
+  finalHeaders: null,
+  finalRows: null,
+  markedList: null,      // [{name, keyword}]
+  totalCount: 0,
+  markedCount: 0
+};
+
+const dineEl = {
+  card: document.getElementById("dineInCard"),
+  input: document.getElementById("dineInInput"),
+  filename: document.getElementById("dineInFilename"),
+  keywordsBox: document.getElementById("nonFoodKeywords"),
+  statTotal: document.getElementById("statDineInTotal"),
+  statMarked: document.getElementById("statDineInMarked"),
+  statKeywords: document.getElementById("statDineInKeywords"),
+  processBtn: document.getElementById("dineInProcessBtn"),
+  resetBtn: document.getElementById("dineInResetBtn"),
+  downloadBtn: document.getElementById("dineInDownloadBtn"),
+  progressSection: document.getElementById("dineInProgressSection"),
+  progressStatus: document.getElementById("dineInProgressStatus"),
+  progressFill: document.getElementById("dineInProgressFill"),
+  resultSection: document.getElementById("dineInResultSection"),
+  resTotal: document.getElementById("dineInResTotal"),
+  resMarked: document.getElementById("dineInResMarked"),
+  resTime: document.getElementById("dineInResTime"),
+  markedTableBody: document.getElementById("dineInMarkedTableBody")
+};
+
+// Populate the keyword textarea with the default list on load
+dineEl.keywordsBox.value = DEFAULT_NONFOOD_KEYWORDS.join("\n");
+dineEl.statKeywords.textContent = DEFAULT_NONFOOD_KEYWORDS.length;
+dineEl.keywordsBox.addEventListener("input", () => {
+  const lines = dineEl.keywordsBox.value.split("\n").map(l => l.trim()).filter(l => l !== "");
+  dineEl.statKeywords.textContent = lines.length;
+});
+
+function escapeRegExp(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+// Whole-word match: returns the matching keyword or null
+function findNonFoodMatch(itemName, keywords) {
+  const normalized = normalizeName(itemName);
+  if (normalized === "") return null;
+  for (const kw of keywords) {
+    const normKw = normalizeName(kw);
+    if (normKw === "") continue;
+    const pattern = new RegExp("\\b" + escapeRegExp(normKw) + "\\b", "i");
+    if (pattern.test(normalized)) return kw;
+  }
+  return null;
+}
+
+async function handleDineInFile(file) {
+  if (!file.name.toLowerCase().endsWith(".csv")) { showToast("Please upload a valid .csv file", "error"); return; }
+  try {
+    const text = await readFileAsText(file);
+    const parsed = parseCSV(text);
+    if (!validateHeaders(parsed.headers, ["item name", "price"])) {
+      showToast("Invalid Dine-in CSV: missing Item Name or Price column", "error");
+      return;
+    }
+    dineInState.fileData = parsed;
+    dineInState.headerIndex = buildHeaderIndex(parsed.headers);
+    dineEl.filename.textContent = file.name;
+    dineEl.filename.style.display = "inline-block";
+    dineEl.card.classList.add("loaded");
+    dineEl.statTotal.textContent = parsed.rows.length;
+    showToast("Dine-in Menu Loaded", "success");
+    dineEl.processBtn.disabled = false;
+  } catch (err) {
+    showToast("Failed to read Dine-in CSV", "error");
+    console.error(err);
+  }
+}
+
+setupDropZone(dineEl.card, dineEl.input, handleDineInFile);
+
+async function runDineInProcess() {
+  const startTime = performance.now();
+  dineEl.processBtn.disabled = true;
+  dineEl.downloadBtn.disabled = true;
+  dineEl.resultSection.classList.remove("active");
+
+  dineEl.progressSection.classList.add("active");
+  dineEl.progressFill.style.width = "0%";
+  dineEl.progressStatus.textContent = "Preparing...";
+  await sleep(120);
+
+  dineEl.progressFill.style.width = "20%";
+  dineEl.progressStatus.textContent = "Reading Dine-in Menu...";
+  const origHeaders = dineInState.fileData.headers;
+  const rows = dineInState.fileData.rows;
+  const idx = dineInState.headerIndex;
+  const nameIdx = idx["item name"];
+  const availIdx = idx["available"]; // may be undefined
+  await sleep(150);
+
+  dineEl.progressFill.style.width = "40%";
+  dineEl.progressStatus.textContent = "Inserting Area Display Name Column...";
+  // Build final headers: insert "Area Display Name" right after "Online Display Name"
+  const onlineDisplayPos = origHeaders.findIndex(h => normalizeName(h) === "online display name");
+  const finalHeaders = [...origHeaders];
+  let insertAt = onlineDisplayPos !== -1 ? onlineDisplayPos + 1 : finalHeaders.length;
+  finalHeaders.splice(insertAt, 0, "Area Display Name");
+  await sleep(150);
+
+  dineEl.progressFill.style.width = "60%";
+  dineEl.progressStatus.textContent = "Loading Keyword List...";
+  const keywords = dineEl.keywordsBox.value.split("\n").map(l => l.trim()).filter(l => l !== "");
+  await sleep(150);
+
+  dineEl.progressFill.style.width = "80%";
+  dineEl.progressStatus.textContent = "Flagging Non-Food Items...";
+  const marked = [];
+  const finalRows = new Array(rows.length);
+  for (let i = 0; i < rows.length; i++) {
+    const srcRow = rows[i];
+    const newRow = [...srcRow];
+    // pad row to original header length if short
+    while (newRow.length < origHeaders.length) newRow.push("");
+    // insert blank Area Display Name at the same position
+    newRow.splice(insertAt, 0, "");
+
+    const itemName = getCell(srcRow, nameIdx);
+    const matchedKeyword = findNonFoodMatch(itemName, keywords);
+
+    if (matchedKeyword) {
+      // Available column index shifts by +1 if it was after the insert point
+      let finalAvailIdx = availIdx;
+      if (finalAvailIdx !== undefined && finalAvailIdx >= insertAt) finalAvailIdx += 1;
+      if (finalAvailIdx !== undefined) {
+        newRow[finalAvailIdx] = "No";
+      }
+      marked.push({ name: itemName, keyword: matchedKeyword });
+    }
+    finalRows[i] = newRow;
+  }
+  await sleep(150);
+
+  dineEl.progressFill.style.width = "100%";
+  dineEl.progressStatus.textContent = "Completed";
+  await sleep(250);
+  dineEl.progressSection.classList.remove("active");
+
+  dineInState.finalHeaders = finalHeaders;
+  dineInState.finalRows = finalRows;
+  dineInState.markedList = marked;
+  dineInState.totalCount = rows.length;
+  dineInState.markedCount = marked.length;
+
+  const elapsed = Math.round(performance.now() - startTime);
+  displayDineInResults(elapsed);
+
+  dineEl.statTotal.textContent = dineInState.totalCount;
+  dineEl.statMarked.textContent = dineInState.markedCount;
+  dineEl.downloadBtn.disabled = false;
+  dineEl.processBtn.disabled = false;
+
+  showToast("Dine-in Menu Processed", "success");
+}
+
+function displayDineInResults(elapsedMs) {
+  dineEl.resultSection.classList.add("active");
+  dineEl.resTotal.textContent = dineInState.totalCount;
+  dineEl.resMarked.textContent = dineInState.markedCount;
+  dineEl.resTime.textContent = elapsedMs + "ms";
+
+  dineEl.markedTableBody.innerHTML = "";
+  if (dineInState.markedList.length === 0) {
+    dineEl.markedTableBody.innerHTML = `<tr><td colspan="3" class="empty-state">No non-food items detected with the current keyword list.</td></tr>`;
+  } else {
+    const frag = document.createDocumentFragment();
+    dineInState.markedList.forEach((item, i) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${i + 1}</td><td>${escapeHtml(item.name)}</td><td>${escapeHtml(item.keyword)}</td>`;
+      frag.appendChild(tr);
+    });
+    dineEl.markedTableBody.appendChild(frag);
+  }
+}
+
+function generateDineInCSV() {
+  const lines = [dineInState.finalHeaders.map(escapeCSVField).join(",")];
+  for (const row of dineInState.finalRows) lines.push(row.map(escapeCSVField).join(","));
+  return "\uFEFF" + lines.join("\r\n");
+}
+
+dineEl.processBtn.addEventListener("click", () => {
+  if (!dineInState.fileData) { showToast("Please upload the Dine-in Menu CSV first", "error"); return; }
+  runDineInProcess();
+});
+
+dineEl.downloadBtn.addEventListener("click", () => {
+  if (!dineInState.finalRows) return;
+  downloadTextAsFile(generateDineInCSV(), "dinein_menu_processed.csv");
+  showToast("Download Ready", "success");
+});
+
+dineEl.resetBtn.addEventListener("click", () => {
+  dineInState.fileData = null;
+  dineInState.headerIndex = {};
+  dineInState.finalHeaders = null;
+  dineInState.finalRows = null;
+  dineInState.markedList = null;
+  dineInState.totalCount = 0;
+  dineInState.markedCount = 0;
+
+  dineEl.input.value = "";
+  dineEl.filename.textContent = "";
+  dineEl.filename.style.display = "none";
+  dineEl.card.classList.remove("loaded");
+  dineEl.processBtn.disabled = true;
+  dineEl.downloadBtn.disabled = true;
+  dineEl.progressSection.classList.remove("active");
+  dineEl.resultSection.classList.remove("active");
+  dineEl.markedTableBody.innerHTML = "";
+  dineEl.statTotal.textContent = "0";
+  dineEl.statMarked.textContent = "0";
+  dineEl.keywordsBox.value = DEFAULT_NONFOOD_KEYWORDS.join("\n");
+  dineEl.statKeywords.textContent = DEFAULT_NONFOOD_KEYWORDS.length;
+
+  showToast("Dine-in processor reset", "info");
+});
+
+/* ======================================================================
+   PAGE SWITCHING (single-file, two "pages" toggled via display)
+====================================================================== */
+const pageMerge = document.getElementById("page-merge");
+const pageDineIn = document.getElementById("page-dinein");
+const openDineInBtn = document.getElementById("openDineInBtn");
+const backToMergeBtn = document.getElementById("backToMergeBtn");
+
+function goToPage(pageEl) {
+  pageMerge.classList.remove("active");
+  pageDineIn.classList.remove("active");
+  pageEl.classList.add("active");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+openDineInBtn.addEventListener("click", () => goToPage(pageDineIn));
+backToMergeBtn.addEventListener("click", () => goToPage(pageMerge));
+
+/* ======================================================================
    INIT
 ====================================================================== */
 updateStats();
 </script>
+
 </body>
 </html>
