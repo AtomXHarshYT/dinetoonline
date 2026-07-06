@@ -1190,7 +1190,7 @@ function escapeCSVField(value) {
 function generateFinalCSV() {
   const lines = [FINAL_HEADERS.map(escapeCSVField).join(",")];
   for (const row of state.finalRows) lines.push(row.map(escapeCSVField).join(","));
-  return "\uFEFF" + lines.join("\r\n");
+  return lines.join("\r\n");
 }
 
 function generateOfflineOnlyCSV() {
@@ -1198,7 +1198,7 @@ function generateOfflineOnlyCSV() {
   for (const item of state.offlineOnlyList) {
     lines.push(`${escapeCSVField(item.name)},${escapeCSVField(item.price)}`);
   }
-  return "\uFEFF" + lines.join("\r\n");
+  return lines.join("\r\n");
 }
 
 function generateNotFoundCSV() {
@@ -1206,7 +1206,7 @@ function generateNotFoundCSV() {
   for (const item of state.notFoundList) {
     lines.push(`${escapeCSVField(item.name)},${escapeCSVField(item.price)}`);
   }
-  return "\uFEFF" + lines.join("\r\n");
+  return lines.join("\r\n");
 }
 
 /* ======================================================================
@@ -1336,11 +1336,11 @@ const DEFAULT_NONFOOD_KEYWORDS = [
 "Smirnoff","Grey Goose","Gin","London Dry Gin","Bombay Gin","Tequila","Silver Tequila",
 "Gold Tequila","Reposado","Anejo","Añejo","Brandy","Cognac","Liqueur","Baileys","Kahlua",
 "Kahlúa","Malibu","Triple Sec","Cointreau","Amaretto","Sambuca","Jagermeister","Jägermeister",
-"Mead","Cider","Hard Cider","Sake","Soju","charge","container","Alcoholic Cocktail","Mojito","Margarita",
+"Mead","Cider","Hard Cider","Sake","Soju","Alcoholic Cocktail","Mojito","Margarita",
 "Martini","Cosmopolitan","Bloody Mary","Long Island Iced Tea","Old Fashioned","Manhattan",
 "Negroni","Daiquiri","Pina Colada","Piña Colada","Whiskey Sour","Gin and Tonic","Gin & Tonic",
 "Rum and Coke","Rum & Coke","Screwdriver","Peg","Small Peg","Large Peg","Quarter","Half Bottle",
-"Full Bottle","Mini Bottle","Shot","Shots","Shooter","Alcohol","Liquor","Spirit",
+"Full Bottle","Charge","Container","Mini Bottle","Shooter","Alcohol","Liquor","Spirit",
 "Spirits","Hard Liquor","Hard Drink","IMFL","Imported Liquor","Indian Made Foreign Liquor",
 "Birthday Cake Topper","Cake Topper","Birthday Candle","Number Candle","Sparkle Candle",
 "Sparkler","Party Popper","Birthday Cap","Birthday Hat","Party Hat","Birthday Banner",
@@ -1496,20 +1496,28 @@ async function runDineInProcess() {
   dineEl.progressFill.style.width = "80%";
   dineEl.progressStatus.textContent = "Flagging Non-Food & Zero-Price Items...";
 
-  // Pre-compute: for every "item" row, does it have "variation" rows directly below it?
-  // If yes, that parent row's own price (often 0) must NOT trigger the zero-price rule.
+  // Pre-compute: for every "item" row, does it have "variation" rows directly below it,
+  // and are ALL of those variations zero-priced? The parent is only zero-price-flagged
+  // when every variation beneath it is 0; if even one variation has a real price, the
+  // parent stays untouched (Yes) and only the individual zero variations get marked No.
   const hasVariationBelow = new Array(rows.length).fill(false);
+  const allVariationsZero = new Array(rows.length).fill(false);
   if (itemTypeIdx !== undefined) {
     for (let i = 0; i < rows.length; i++) {
       const rowType = normalizeName(getCell(rows[i], itemTypeIdx));
       if (rowType !== "item") continue;
       let j = i + 1;
       let found = false;
+      let allZero = true;
       while (j < rows.length && normalizeName(getCell(rows[j], itemTypeIdx)) === "variation") {
         found = true;
+        const p = parseFloat(getCell(rows[j], priceIdx));
+        const isZero = !isNaN(p) && p === 0;
+        if (!isZero) allZero = false;
         j++;
       }
       hasVariationBelow[i] = found;
+      allVariationsZero[i] = found && allZero;
     }
   }
 
@@ -1526,18 +1534,23 @@ async function runDineInProcess() {
     const itemName = getCell(srcRow, nameIdx);
     const matchedKeyword = findNonFoodMatch(itemName, keywords);
 
-    // Zero-price check, skipped for "item" rows that have variations below them
+    // Zero-price check: parent rows with variations only get flagged if ALL variations
+    // beneath them are zero; everything else (standalone items, variation rows, other
+    // types) is checked purely on its own price.
     let zeroPriceHit = false;
+    let isGroupZero = false;
     if (priceIdx !== undefined) {
       const rowType = itemTypeIdx !== undefined ? normalizeName(getCell(srcRow, itemTypeIdx)) : "";
-      const isParentWithVariations = rowType === "item" && hasVariationBelow[i];
-      if (!isParentWithVariations) {
+      if (rowType === "item" && hasVariationBelow[i]) {
+        zeroPriceHit = allVariationsZero[i];
+        isGroupZero = zeroPriceHit;
+      } else {
         const priceVal = parseFloat(getCell(srcRow, priceIdx));
         zeroPriceHit = !isNaN(priceVal) && priceVal === 0;
       }
     }
 
-    const reason = matchedKeyword ? matchedKeyword : (zeroPriceHit ? "Zero Price" : null);
+    const reason = matchedKeyword ? matchedKeyword : (zeroPriceHit ? (isGroupZero ? "Zero Price (All Variations)" : "Zero Price") : null);
 
     if (reason) {
       // Available column index shifts by +1 if it was after the insert point
@@ -1616,7 +1629,7 @@ dineEl.markedTableBody.addEventListener("change", (e) => {
 function generateDineInCSV() {
   const lines = [dineInState.finalHeaders.map(escapeCSVField).join(",")];
   for (const row of dineInState.finalRows) lines.push(row.map(escapeCSVField).join(","));
-  return "\uFEFF" + lines.join("\r\n");
+  return lines.join("\r\n");
 }
 
 dineEl.processBtn.addEventListener("click", () => {
