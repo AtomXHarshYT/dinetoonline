@@ -458,6 +458,43 @@
     transition:border-color 0.2s ease;
   }
   #nonFoodKeywords:focus{border-color:var(--grad-1);background:rgba(255,255,255,0.08);}
+
+  .picker-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
+    padding:12px 0;
+    border-bottom:1px solid var(--glass-border);
+  }
+  .picker-row:last-child{border-bottom:none;}
+  .picker-row label{
+    font-size:0.9rem;
+    font-weight:600;
+    color:var(--text-primary);
+    flex:1;
+    min-width:220px;
+  }
+  .picker-sub{
+    display:block;
+    font-size:0.78rem;
+    font-weight:400;
+    color:var(--text-secondary);
+    margin-top:2px;
+  }
+  .picker-row select{
+    padding:10px 14px;
+    border-radius:var(--radius-sm);
+    border:1px solid var(--glass-border);
+    background:rgba(255,255,255,0.05);
+    color:var(--text-primary);
+    font-size:0.9rem;
+    min-width:240px;
+    outline:none;
+    cursor:pointer;
+  }
+  .picker-row select:focus{border-color:var(--grad-1);}
 </style>
 </head>
 <body>
@@ -503,6 +540,7 @@
 
   <div class="controls" style="margin-bottom:28px;">
     <button class="btn btn-secondary" id="openDineInBtn">🍽️ Don't have an Online Menu? Open Dine-in Only Processor →</button>
+    <button class="btn btn-secondary" id="openAreaSheetBtn">📍 Item Area-wise Price Sheet →</button>
   </div>
 
   <!-- ============ SUFFIX CODE CONFIG ============ -->
@@ -703,6 +741,105 @@
   </div>
 
   </div><!-- /#page-dinein -->
+
+  <div id="page-areasheet" class="page">
+
+  <div class="controls" style="margin-bottom:24px;">
+    <button class="btn btn-secondary" id="backToMergeBtn2">← Back to Merge Tool</button>
+  </div>
+
+  <!-- ============ AREA-WISE PRICE SHEET SECTION ============ -->
+  <div class="glass-card info-banner">
+    <span class="ic">📍</span>
+    <div>
+      <b>Item Area-wise Price Sheet</b> — for sheets with multiple area/channel price columns side by side
+      (e.g. AC/Dine-in, Zomato or Swiggy, Easy Cater), each followed immediately by its own Available column.
+      For every row: <b>Easy Cater's price</b> is copied from the <b>AC (Dine-in) price column</b>, and
+      <b>Easy Cater's Available</b> is copied from the <b>Zomato/Swiggy Available column</b> (the column right
+      after whichever area column you pick below). Applies to the whole sheet, top to bottom.
+    </div>
+  </div>
+
+  <div class="glass-card upload-card" id="areaSheetCard" style="max-width:500px;margin:0 auto 24px;">
+    <input type="file" id="areaSheetInput" accept=".csv">
+    <span class="upload-icon">📍</span>
+    <div class="upload-title">Area-wise Price Sheet CSV</div>
+    <div class="upload-sub">Drag &amp; drop or click to upload</div>
+    <div class="upload-filename" id="areaSheetFilename" style="display:none;"></div>
+  </div>
+
+  <div class="glass-card config-section" id="areaSheetPickerSection" style="display:none;">
+    <div class="config-label" style="margin-bottom:14px;">🎯 Column Picker</div>
+    <div class="config-hint" style="margin-bottom:16px;">
+      Pick the 3 area columns below. The "Available" column for each is assumed to be the column
+      immediately to its right (e.g. picking "Zomato" uses the very next column as Zomato's Available).
+    </div>
+    <div class="picker-row">
+      <label for="acColumnSelect">AC / Dine-in Price Column <span class="picker-sub">(source for Easy Cater price)</span></label>
+      <select id="acColumnSelect"></select>
+    </div>
+    <div class="picker-row">
+      <label for="zomatoColumnSelect">Zomato / Swiggy Price Column <span class="picker-sub">(its next column = Available source)</span></label>
+      <select id="zomatoColumnSelect"></select>
+    </div>
+    <div class="picker-row">
+      <label for="easyCaterColumnSelect">Easy Cater Price Column <span class="picker-sub">(target — its next column = Available target)</span></label>
+      <select id="easyCaterColumnSelect"></select>
+    </div>
+  </div>
+
+  <div class="stats-grid" style="grid-template-columns:repeat(2,1fr);margin-bottom:20px;">
+    <div class="glass-card stat-card">
+      <div class="stat-value" id="statAreaSheetTotal">0</div>
+      <div class="stat-label">Total Rows</div>
+    </div>
+    <div class="glass-card stat-card">
+      <div class="stat-value" id="statAreaSheetUpdated">0</div>
+      <div class="stat-label">Rows Updated</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="btn btn-primary" id="areaSheetProcessBtn" disabled>⚡ Sync Easy Cater Columns</button>
+    <button class="btn btn-secondary" id="areaSheetResetBtn">↺ Reset</button>
+    <button class="btn btn-success" id="areaSheetDownloadBtn" disabled>⬇ Download Processed CSV</button>
+  </div>
+
+  <div class="glass-card progress-section" id="areaSheetProgressSection">
+    <div class="progress-label">
+      <span>Processing</span>
+      <span id="areaSheetProgressStatus">Preparing...</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="areaSheetProgressFill"></div>
+    </div>
+  </div>
+
+  <div class="glass-card result-section" id="areaSheetResultSection">
+    <div class="result-header">
+      <div class="check-icon">✓</div>
+      <h2>Area-wise Price Sheet Synced</h2>
+    </div>
+    <div class="result-summary" style="grid-template-columns:repeat(2,1fr);">
+      <div class="result-item">
+        <div class="val" id="areaSheetResTotal">0</div>
+        <div class="lbl">Total Rows</div>
+      </div>
+      <div class="result-item">
+        <div class="val" id="areaSheetResTime">0ms</div>
+        <div class="lbl">Processing Time</div>
+      </div>
+    </div>
+    <div class="section-title">👀 Preview (first 10 rows)</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Item Name / Row</th><th>Easy Cater Price</th><th>Easy Cater Available</th></tr></thead>
+        <tbody id="areaSheetPreviewTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  </div><!-- /#page-areasheet -->
 
   <footer>
     <strong>Menu Price Merger</strong><br>
@@ -1670,22 +1807,239 @@ dineEl.resetBtn.addEventListener("click", () => {
 });
 
 /* ======================================================================
-   PAGE SWITCHING (single-file, two "pages" toggled via display)
+   ITEM AREA-WISE PRICE SHEET — independent tool (no online file needed)
+   Copies Easy Cater's Price from a chosen AC/Dine-in price column, and
+   Easy Cater's Available from the column immediately after a chosen
+   Zomato/Swiggy column, for every row top to bottom.
+====================================================================== */
+const areaSheetState = {
+  fileData: null,      // { headers: [], rows: [[...]] }
+  finalRows: null,
+  totalCount: 0,
+  updatedCount: 0
+};
+
+const areaEl = {
+  card: document.getElementById("areaSheetCard"),
+  input: document.getElementById("areaSheetInput"),
+  filename: document.getElementById("areaSheetFilename"),
+  pickerSection: document.getElementById("areaSheetPickerSection"),
+  acSelect: document.getElementById("acColumnSelect"),
+  zomatoSelect: document.getElementById("zomatoColumnSelect"),
+  easyCaterSelect: document.getElementById("easyCaterColumnSelect"),
+  statTotal: document.getElementById("statAreaSheetTotal"),
+  statUpdated: document.getElementById("statAreaSheetUpdated"),
+  processBtn: document.getElementById("areaSheetProcessBtn"),
+  resetBtn: document.getElementById("areaSheetResetBtn"),
+  downloadBtn: document.getElementById("areaSheetDownloadBtn"),
+  progressSection: document.getElementById("areaSheetProgressSection"),
+  progressStatus: document.getElementById("areaSheetProgressStatus"),
+  progressFill: document.getElementById("areaSheetProgressFill"),
+  resultSection: document.getElementById("areaSheetResultSection"),
+  resTotal: document.getElementById("areaSheetResTotal"),
+  resTime: document.getElementById("areaSheetResTime"),
+  previewTableBody: document.getElementById("areaSheetPreviewTableBody")
+};
+
+async function handleAreaSheetFile(file) {
+  if (!file.name.toLowerCase().endsWith(".csv")) { showToast("Please upload a valid .csv file", "error"); return; }
+  try {
+    const text = await readFileAsText(file);
+    const parsed = parseCSV(text);
+    if (parsed.headers.length === 0 || parsed.rows.length === 0) {
+      showToast("Invalid CSV: no headers or rows found", "error");
+      return;
+    }
+    areaSheetState.fileData = parsed;
+    areaEl.filename.textContent = file.name;
+    areaEl.filename.style.display = "inline-block";
+    areaEl.card.classList.add("loaded");
+    areaEl.statTotal.textContent = parsed.rows.length;
+    populateAreaSheetColumnPickers(parsed.headers);
+    areaEl.pickerSection.style.display = "block";
+    showToast("Area-wise Price Sheet Loaded", "success");
+    areaEl.processBtn.disabled = false;
+  } catch (err) {
+    showToast("Failed to read CSV", "error");
+    console.error(err);
+  }
+}
+
+function populateAreaSheetColumnPickers(headers) {
+  const optionsHtml = headers.map((h, i) =>
+    `<option value="${i}">${i + 1}: ${escapeHtml(h || "(unnamed)")}</option>`
+  ).join("");
+  areaEl.acSelect.innerHTML = optionsHtml;
+  areaEl.zomatoSelect.innerHTML = optionsHtml;
+  areaEl.easyCaterSelect.innerHTML = optionsHtml;
+
+  // best-effort auto-guess based on header text, user can still override
+  const guess = (needle) => headers.findIndex(h => normalizeName(h).includes(needle));
+  const acGuess = guess("ac");
+  const zomatoGuess = guess("zomato") !== -1 ? guess("zomato") : guess("swiggy");
+  const easyCaterGuess = guess("easy cater");
+
+  if (acGuess !== -1) areaEl.acSelect.value = acGuess;
+  if (zomatoGuess !== -1) areaEl.zomatoSelect.value = zomatoGuess;
+  if (easyCaterGuess !== -1) areaEl.easyCaterSelect.value = easyCaterGuess;
+}
+
+setupDropZone(areaEl.card, areaEl.input, handleAreaSheetFile);
+
+async function runAreaSheetProcess() {
+  const startTime = performance.now();
+  areaEl.processBtn.disabled = true;
+  areaEl.downloadBtn.disabled = true;
+  areaEl.resultSection.classList.remove("active");
+
+  const headers = areaSheetState.fileData.headers;
+  const rows = areaSheetState.fileData.rows;
+  const acIdx = parseInt(areaEl.acSelect.value, 10);
+  const zomatoIdx = parseInt(areaEl.zomatoSelect.value, 10);
+  const easyCaterIdx = parseInt(areaEl.easyCaterSelect.value, 10);
+  const zomatoAvailIdx = zomatoIdx + 1;
+  const easyCaterAvailIdx = easyCaterIdx + 1;
+
+  if (zomatoAvailIdx >= headers.length) {
+    showToast("Zomato/Swiggy column has no column after it for Available — pick a different column", "error");
+    areaEl.processBtn.disabled = false;
+    return;
+  }
+  if (easyCaterAvailIdx >= headers.length) {
+    showToast("Easy Cater column has no column after it for Available — pick a different column", "error");
+    areaEl.processBtn.disabled = false;
+    return;
+  }
+
+  areaEl.progressSection.classList.add("active");
+  areaEl.progressFill.style.width = "0%";
+  areaEl.progressStatus.textContent = "Preparing...";
+  await sleep(120);
+
+  areaEl.progressFill.style.width = "35%";
+  areaEl.progressStatus.textContent = "Reading Sheet...";
+  await sleep(150);
+
+  areaEl.progressFill.style.width = "65%";
+  areaEl.progressStatus.textContent = "Syncing Easy Cater Columns...";
+  const finalRows = new Array(rows.length);
+  for (let i = 0; i < rows.length; i++) {
+    const srcRow = rows[i];
+    const newRow = [...srcRow];
+    while (newRow.length < headers.length) newRow.push("");
+    newRow[easyCaterIdx] = getCell(srcRow, acIdx);
+    newRow[easyCaterAvailIdx] = getCell(srcRow, zomatoAvailIdx);
+    finalRows[i] = newRow;
+  }
+  await sleep(150);
+
+  areaEl.progressFill.style.width = "100%";
+  areaEl.progressStatus.textContent = "Completed";
+  await sleep(250);
+  areaEl.progressSection.classList.remove("active");
+
+  areaSheetState.finalRows = finalRows;
+  areaSheetState.totalCount = rows.length;
+  areaSheetState.updatedCount = rows.length;
+
+  const elapsed = Math.round(performance.now() - startTime);
+  displayAreaSheetResults(elapsed, easyCaterIdx, easyCaterAvailIdx);
+
+  areaEl.statTotal.textContent = areaSheetState.totalCount;
+  areaEl.statUpdated.textContent = areaSheetState.updatedCount;
+  areaEl.downloadBtn.disabled = false;
+  areaEl.processBtn.disabled = false;
+
+  showToast("Easy Cater Columns Synced", "success");
+}
+
+function displayAreaSheetResults(elapsedMs, easyCaterIdx, easyCaterAvailIdx) {
+  areaEl.resultSection.classList.add("active");
+  areaEl.resTotal.textContent = areaSheetState.totalCount;
+  areaEl.resTime.textContent = elapsedMs + "ms";
+
+  areaEl.previewTableBody.innerHTML = "";
+  const preview = areaSheetState.finalRows.slice(0, 10);
+  if (preview.length === 0) {
+    areaEl.previewTableBody.innerHTML = `<tr><td colspan="4" class="empty-state">No rows to preview.</td></tr>`;
+  } else {
+    const frag = document.createDocumentFragment();
+    preview.forEach((row, i) => {
+      const tr = document.createElement("tr");
+      const label = row[0] !== undefined && row[0] !== "" ? row[0] : `Row ${i + 1}`;
+      tr.innerHTML = `<td>${i + 1}</td><td>${escapeHtml(label)}</td><td>${escapeHtml(getCell(row, easyCaterIdx))}</td><td>${escapeHtml(getCell(row, easyCaterAvailIdx))}</td>`;
+      frag.appendChild(tr);
+    });
+    areaEl.previewTableBody.appendChild(frag);
+  }
+}
+
+function generateAreaSheetCSV() {
+  const headers = areaSheetState.fileData.headers;
+  const lines = [headers.map(escapeCSVField).join(",")];
+  for (const row of areaSheetState.finalRows) lines.push(row.map(escapeCSVField).join(","));
+  return lines.join("\r\n");
+}
+
+areaEl.processBtn.addEventListener("click", () => {
+  if (!areaSheetState.fileData) { showToast("Please upload the Area-wise Price Sheet CSV first", "error"); return; }
+  runAreaSheetProcess();
+});
+
+areaEl.downloadBtn.addEventListener("click", () => {
+  if (!areaSheetState.finalRows) return;
+  downloadTextAsFile(generateAreaSheetCSV(), "area_wise_price_sheet_synced.csv");
+  showToast("Download Ready", "success");
+});
+
+areaEl.resetBtn.addEventListener("click", () => {
+  areaSheetState.fileData = null;
+  areaSheetState.finalRows = null;
+  areaSheetState.totalCount = 0;
+  areaSheetState.updatedCount = 0;
+
+  areaEl.input.value = "";
+  areaEl.filename.textContent = "";
+  areaEl.filename.style.display = "none";
+  areaEl.card.classList.remove("loaded");
+  areaEl.pickerSection.style.display = "none";
+  areaEl.acSelect.innerHTML = "";
+  areaEl.zomatoSelect.innerHTML = "";
+  areaEl.easyCaterSelect.innerHTML = "";
+  areaEl.processBtn.disabled = true;
+  areaEl.downloadBtn.disabled = true;
+  areaEl.progressSection.classList.remove("active");
+  areaEl.resultSection.classList.remove("active");
+  areaEl.previewTableBody.innerHTML = "";
+  areaEl.statTotal.textContent = "0";
+  areaEl.statUpdated.textContent = "0";
+
+  showToast("Area-wise Price Sheet reset", "info");
+});
+
+/* ======================================================================
+   PAGE SWITCHING (single-file, three "pages" toggled via display)
 ====================================================================== */
 const pageMerge = document.getElementById("page-merge");
 const pageDineIn = document.getElementById("page-dinein");
+const pageAreaSheet = document.getElementById("page-areasheet");
 const openDineInBtn = document.getElementById("openDineInBtn");
+const openAreaSheetBtn = document.getElementById("openAreaSheetBtn");
 const backToMergeBtn = document.getElementById("backToMergeBtn");
+const backToMergeBtn2 = document.getElementById("backToMergeBtn2");
 
 function goToPage(pageEl) {
   pageMerge.classList.remove("active");
   pageDineIn.classList.remove("active");
+  pageAreaSheet.classList.remove("active");
   pageEl.classList.add("active");
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 openDineInBtn.addEventListener("click", () => goToPage(pageDineIn));
+openAreaSheetBtn.addEventListener("click", () => goToPage(pageAreaSheet));
 backToMergeBtn.addEventListener("click", () => goToPage(pageMerge));
+backToMergeBtn2.addEventListener("click", () => goToPage(pageMerge));
 
 /* ======================================================================
    INIT
