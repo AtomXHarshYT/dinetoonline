@@ -951,6 +951,16 @@ function buildHeaderIndex(headers) {
   return map;
 }
 
+// Fully removes a column (by name, case-insensitive) from parsed CSV data if present.
+// Returns { headers, rows } unchanged if the column doesn't exist.
+function removeColumnIfExists(parsed, columnName) {
+  const idx = parsed.headers.findIndex(h => normalizeName(h) === normalizeName(columnName));
+  if (idx === -1) return parsed;
+  const newHeaders = parsed.headers.filter((_, i) => i !== idx);
+  const newRows = parsed.rows.map(row => row.filter((_, i) => i !== idx));
+  return { headers: newHeaders, rows: newRows };
+}
+
 function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
 // Strip a trailing suffix code (e.g. "[O]", "[online]") from an item name.
@@ -1057,7 +1067,7 @@ async function handleOfflineFile(file) {
   if (!file.name.toLowerCase().endsWith(".csv")) { showToast("Please upload a valid .csv file", "error"); return; }
   try {
     const text = await readFileAsText(file);
-    const parsed = parseCSV(text);
+    const parsed = removeColumnIfExists(parseCSV(text), "Markup Price");
     if (!validateHeaders(parsed.headers, REQUIRED_OFFLINE)) {
       showToast("Invalid Offline CSV: missing Item Name or Price column", "error");
       return;
@@ -1080,7 +1090,7 @@ async function handleOnlineFile(file) {
   if (!file.name.toLowerCase().endsWith(".csv")) { showToast("Please upload a valid .csv file", "error"); return; }
   try {
     const text = await readFileAsText(file);
-    const parsed = parseCSV(text);
+    const parsed = removeColumnIfExists(parseCSV(text), "Markup Price");
     if (!validateHeaders(parsed.headers, REQUIRED_ONLINE)) {
       showToast("Invalid Online CSV: missing Item Name, Price or Available column", "error");
       return;
@@ -1443,7 +1453,7 @@ el.resetBtn.addEventListener("click", resetAll);
 const DEFAULT_NONFOOD_KEYWORDS = [
 "Tissue","Tissue Paper","Paper Napkin","Napkin","Wet Wipe","Wet Wipes","Wipe","Toothpick",
 "Straw","Paper Straw","Plastic Straw","Spoon","Plastic Spoon","Wooden Spoon","Fork","Knife",
-"Chopsticks","Plate","Disposable Plate","Disposable Bowl","Glass","Disposable Glass",
+"Chopsticks","Plate","Disposable Plate","Bowl","Disposable Bowl","Glass","Disposable Glass",
 "Cup","Disposable Cup","Cutlery","Disposable Cutlery","Tray","Carry Bag","Paper Bag",
 "Plastic Bag","Shopping Bag","Food Container","Container","Disposable Container","Packaging",
 "Packaging Charge","Packing","Packing Charge","Parcel Charge","Parcel Packing","Takeaway Box",
@@ -1467,17 +1477,17 @@ const DEFAULT_NONFOOD_KEYWORDS = [
 "Hukka","Shisha","Vape","E-Cigarette","Nicotine","Beer","Draft Beer","Draught Beer","Craft Beer",
 "Lager","Ale","Stout","IPA","Pilsner","Wheat Beer","Strong Beer","Light Beer","Pint","Mug Beer",
 "Pitcher Beer","Tower Beer","Wine","Red Wine","White Wine","Rose Wine","Rosé","Sparkling Wine",
-"Champagne","Prosecco","Sangria","Whisky","Whiskey","Single Malt","Double Malt",
+"Champagne","Prosecco","Sangria","Whisky","Whiskey","Scotch","Single Malt","Double Malt",
 "Blended Whisky","Bourbon","Rye Whiskey","Irish Whiskey","Japanese Whisky","Rum","Dark Rum",
 "White Rum","Gold Rum","Spiced Rum","Old Monk","Bacardi","Vodka","Flavoured Vodka","Absolut",
 "Smirnoff","Grey Goose","Gin","London Dry Gin","Bombay Gin","Tequila","Silver Tequila",
 "Gold Tequila","Reposado","Anejo","Añejo","Brandy","Cognac","Liqueur","Baileys","Kahlua",
 "Kahlúa","Malibu","Triple Sec","Cointreau","Amaretto","Sambuca","Jagermeister","Jägermeister",
-"Mead","Cider","Hard Cider","Sake","Soju","Alcoholic Cocktail","Margarita",
+"Mead","Cider","Hard Cider","Sake","Soju","Cocktail","Alcoholic Cocktail","Mojito","Margarita",
 "Martini","Cosmopolitan","Bloody Mary","Long Island Iced Tea","Old Fashioned","Manhattan",
 "Negroni","Daiquiri","Pina Colada","Piña Colada","Whiskey Sour","Gin and Tonic","Gin & Tonic",
 "Rum and Coke","Rum & Coke","Screwdriver","Peg","Small Peg","Large Peg","Quarter","Half Bottle",
-"Full Bottle","Charge","parcel","parcel charge","Container","Mini Bottle","Shooter","Alcohol","Liquor","Spirit",
+"Full Bottle","Bottle","Mini Bottle","Shot","Shots","Shooter","Alcohol","Liquor","Spirit",
 "Spirits","Hard Liquor","Hard Drink","IMFL","Imported Liquor","Indian Made Foreign Liquor",
 "Birthday Cake Topper","Cake Topper","Birthday Candle","Number Candle","Sparkle Candle",
 "Sparkler","Party Popper","Birthday Cap","Birthday Hat","Party Hat","Birthday Banner",
@@ -1573,7 +1583,7 @@ async function handleDineInFile(file) {
   if (!file.name.toLowerCase().endsWith(".csv")) { showToast("Please upload a valid .csv file", "error"); return; }
   try {
     const text = await readFileAsText(file);
-    const parsed = parseCSV(text);
+    const parsed = removeColumnIfExists(parseCSV(text), "Markup Price");
     if (!validateHeaders(parsed.headers, ["item name", "price"])) {
       showToast("Invalid Dine-in CSV: missing Item Name or Price column", "error");
       return;
@@ -1845,7 +1855,7 @@ async function handleAreaSheetFile(file) {
   if (!file.name.toLowerCase().endsWith(".csv")) { showToast("Please upload a valid .csv file", "error"); return; }
   try {
     const text = await readFileAsText(file);
-    const parsed = parseCSV(text);
+    const parsed = removeColumnIfExists(parseCSV(text), "Markup Price");
     if (parsed.headers.length === 0 || parsed.rows.length === 0) {
       showToast("Invalid CSV: no headers or rows found", "error");
       return;
