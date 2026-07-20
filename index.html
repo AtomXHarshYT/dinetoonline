@@ -37,18 +37,7 @@
           system-ui,
           -apple-system,
           sans-serif;
-        background:
-          radial-gradient(
-            circle at 15% 20%,
-            rgba(99, 102, 241, 0.15),
-            transparent 40%
-          ),
-          radial-gradient(
-            circle at 85% 80%,
-            rgba(236, 72, 153, 0.12),
-            transparent 40%
-          ),
-          var(--bg-primary);
+        background: radial-gradient(circle at 15% 20%, rgba(99, 102, 241, 0.15), transparent 40%), radial-gradient(circle at 85% 80%, rgba(236, 72, 153, 0.12), transparent 40%), var(--bg-primary);
         color: var(--text-primary);
         min-height: 100vh;
         padding: 24px;
@@ -66,12 +55,7 @@
       header h1 {
         font-size: 2.4rem;
         font-weight: 800;
-        background: linear-gradient(
-          135deg,
-          var(--grad-1),
-          var(--grad-2),
-          var(--grad-3)
-        );
+        background: linear-gradient(135deg, var(--grad-1), var(--grad-2), var(--grad-3));
         -webkit-background-clip: text;
         background-clip: text;
         color: transparent;
@@ -134,11 +118,7 @@
         content: "";
         position: absolute;
         inset: 0;
-        background: linear-gradient(
-          135deg,
-          rgba(99, 102, 241, 0.08),
-          rgba(236, 72, 153, 0.08)
-        );
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(236, 72, 153, 0.08));
         opacity: 0;
         transition: opacity 0.3s ease;
       }
@@ -318,33 +298,21 @@
         box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
       }
       .btn-success {
-        background: linear-gradient(
-          135deg,
-          var(--grad-success1),
-          var(--grad-success2)
-        );
+        background: linear-gradient(135deg, var(--grad-success1), var(--grad-success2));
       }
       .btn-success:not(:disabled):hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
       }
       .btn-danger {
-        background: linear-gradient(
-          135deg,
-          var(--grad-danger1),
-          var(--grad-danger2)
-        );
+        background: linear-gradient(135deg, var(--grad-danger1), var(--grad-danger2));
       }
       .btn-danger:not(:disabled):hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
       }
       .btn-warn {
-        background: linear-gradient(
-          135deg,
-          var(--grad-warn1),
-          var(--grad-warn2)
-        );
+        background: linear-gradient(135deg, var(--grad-warn1), var(--grad-warn2));
       }
       .btn-warn:not(:disabled):hover {
         transform: translateY(-2px);
@@ -389,12 +357,7 @@
         height: 100%;
         width: 0%;
         border-radius: 20px;
-        background: linear-gradient(
-          90deg,
-          var(--grad-1),
-          var(--grad-2),
-          var(--grad-3)
-        );
+        background: linear-gradient(90deg, var(--grad-1), var(--grad-2), var(--grad-3));
         background-size: 200% 100%;
         animation: shimmer 2s linear infinite;
         transition: width 0.4s ease;
@@ -426,11 +389,7 @@
         width: 44px;
         height: 44px;
         border-radius: 50%;
-        background: linear-gradient(
-          135deg,
-          var(--grad-success1),
-          var(--grad-success2)
-        );
+        background: linear-gradient(135deg, var(--grad-success1), var(--grad-success2));
         display: flex;
         align-items: center;
         justify-content: center;
@@ -715,15 +674,7 @@
       <div id="page-merge" class="page active">
         <div class="glass-card info-banner">
           <span class="ic">ℹ️</span>
-          <div>
-            <b>Merge logic:</b> Final file = every item from Offline Menu +
-            Online Menu combined (matched by exact Item Name).
-            <b>Price</b> always comes from the Offline (Dine-in) Menu.
-            <b>Available</b> = "Yes" only if the item is marked Yes in the
-            Online Menu — items only found offline (not sold online) are marked
-            "No". Output columns follow the Online Menu structure (includes Area
-            Display Name).
-          </div>
+          <div><b>Merge logic:</b> Final file = every item from Offline Menu + Online Menu combined (matched by exact Item Name). <b>Price</b> always comes from the Offline (Dine-in) Menu. <b>Available</b> = "Yes" only if the item is marked Yes in the Online Menu — items only found offline (not sold online) are marked "No". Output columns follow the Online Menu structure (includes Area Display Name).</div>
         </div>
 
         <!-- ============ UPLOAD SECTION ============ -->
@@ -732,60 +683,35 @@
             <input type="file" id="offlineInput" accept=".csv" />
             <span class="upload-icon">🗂️</span>
             <div class="upload-title">Offline Menu CSV</div>
-            <div class="upload-sub">
-              Dine-in prices • Drag &amp; drop or click to upload
-            </div>
-            <div
-              class="upload-filename"
-              id="offlineFilename"
-              style="display: none"
-            ></div>
+            <div class="upload-sub">Dine-in prices • Drag &amp; drop or click to upload</div>
+            <div class="upload-filename" id="offlineFilename" style="display: none"></div>
           </div>
 
           <div class="glass-card upload-card" id="onlineCard">
             <input type="file" id="onlineInput" accept=".csv" />
             <span class="upload-icon">🌐</span>
             <div class="upload-title">Online Menu CSV</div>
-            <div class="upload-sub">
-              Availability source • Drag &amp; drop or click to upload
-            </div>
-            <div
-              class="upload-filename"
-              id="onlineFilename"
-              style="display: none"
-            ></div>
+            <div class="upload-sub">Availability source • Drag &amp; drop or click to upload</div>
+            <div class="upload-filename" id="onlineFilename" style="display: none"></div>
           </div>
         </div>
 
         <div class="controls" style="margin-bottom: 28px">
-          <button class="btn btn-secondary" id="openDineInBtn">
-            🍽️ Don't have an Online Menu? Open Dine-in Only Processor →
-          </button>
-          <button class="btn btn-secondary" id="openAreaSheetBtn">
-            📍 Item Area-wise Price Sheet →
-          </button>
+          <button class="btn btn-secondary" id="openDineInBtn">🍽️ Don't have an Online Menu? Open Dine-in Only Processor →</button>
+          <button class="btn btn-secondary" id="openAreaSheetBtn">📍 Item Area-wise Price Sheet →</button>
         </div>
 
         <!-- ============ SUFFIX CODE CONFIG ============ -->
         <div class="glass-card config-section">
           <div class="config-row">
             <div class="config-text">
-              <div class="config-label">
-                🏷️ Online Item Name Suffix Code (optional)
-              </div>
+              <div class="config-label">🏷️ Online Item Name Suffix Code (optional)</div>
               <div class="config-hint">
                 If Online Menu item names end with a short code like
-                <code>[O]</code> or <code>[online]</code> that the Offline Menu
-                doesn't have, enter it here exactly. It will be stripped from
-                the end of each Online item name before matching.
+                <code>[O]</code> or <code>[online]</code> that the Offline Menu doesn't have, enter it here exactly. It will be stripped from the end of each Online item name before matching.
               </div>
             </div>
-            <input
-              type="text"
-              id="suffixCodeInput"
-              placeholder="e.g. [O]"
-              spellcheck="false"
-            />
+            <input type="text" id="suffixCodeInput" placeholder="e.g. [O]" spellcheck="false" />
           </div>
         </div>
 
@@ -819,19 +745,11 @@
 
         <!-- ============ CONTROLS ============ -->
         <div class="controls">
-          <button class="btn btn-primary" id="mergeBtn" disabled>
-            ⚡ Merge Menus
-          </button>
+          <button class="btn btn-primary" id="mergeBtn" disabled>⚡ Merge Menus</button>
           <button class="btn btn-secondary" id="resetBtn">↺ Reset</button>
-          <button class="btn btn-success" id="downloadFinalBtn" disabled>
-            ⬇ Download Final CSV
-          </button>
-          <button class="btn btn-warn" id="downloadOfflineOnlyBtn" disabled>
-            ⬇ Download Offline-Only Added
-          </button>
-          <button class="btn btn-danger" id="downloadNotFoundBtn" disabled>
-            ⬇ Download Online w/o Offline Price
-          </button>
+          <button class="btn btn-success" id="downloadFinalBtn" disabled>⬇ Download Final CSV</button>
+          <button class="btn btn-warn" id="downloadOfflineOnlyBtn" disabled>⬇ Download Offline-Only Added</button>
+          <button class="btn btn-danger" id="downloadNotFoundBtn" disabled>⬇ Download Online w/o Offline Price</button>
         </div>
 
         <!-- ============ PROGRESS ============ -->
@@ -870,9 +788,7 @@
             </div>
           </div>
 
-          <div class="section-title">
-            🆕 Offline-Only Items Added (Available = No)
-          </div>
+          <div class="section-title">🆕 Offline-Only Items Added (Available = No)</div>
           <div class="table-wrap">
             <table>
               <thead>
@@ -886,9 +802,7 @@
             </table>
           </div>
 
-          <div class="section-title">
-            ⚠️ Online Items With No Offline Price Match
-          </div>
+          <div class="section-title">⚠️ Online Items With No Offline Price Match</div>
           <div class="table-wrap">
             <table>
               <thead>
@@ -907,61 +821,30 @@
 
       <div id="page-dinein" class="page">
         <div class="controls" style="margin-bottom: 24px">
-          <button class="btn btn-secondary" id="backToMergeBtn">
-            ← Back to Merge Tool
-          </button>
+          <button class="btn btn-secondary" id="backToMergeBtn">← Back to Merge Tool</button>
         </div>
 
         <!-- ============ DINE-IN ONLY PROCESSOR SECTION ============ -->
         <div class="glass-card info-banner">
           <span class="ic">🍽️</span>
-          <div>
-            <b>Dine-in Only Processor</b> — use this when you don't have an
-            Online Menu file at all, just the Offline (Dine-in) Menu. It adds an
-            <b>Area Display Name</b> column right after Online Display Name
-            (left blank), and automatically marks known
-            <b>non-food items</b> (tissues, cutlery, packaging charges, alcohol,
-            decoration/event charges, etc.) as <b>Available = No</b>. Everything
-            else keeps its original Available value. This works completely
-            independently of the merge tool above.
-          </div>
+          <div><b>Dine-in Only Processor</b> — use this when you don't have an Online Menu file at all, just the Offline (Dine-in) Menu. It adds an <b>Area Display Name</b> column right after Online Display Name (left blank), and automatically marks known <b>non-food items</b> (tissues, cutlery, packaging charges, alcohol, decoration/event charges, etc.) as <b>Available = No</b>. Everything else keeps its original Available value. This works completely independently of the merge tool above.</div>
         </div>
 
-        <div
-          class="glass-card upload-card"
-          id="dineInCard"
-          style="max-width: 500px; margin: 0 auto 24px"
-        >
+        <div class="glass-card upload-card" id="dineInCard" style="max-width: 500px; margin: 0 auto 24px">
           <input type="file" id="dineInInput" accept=".csv" />
           <span class="upload-icon">🍽️</span>
           <div class="upload-title">Dine-in Menu CSV</div>
           <div class="upload-sub">Drag &amp; drop or click to upload</div>
-          <div
-            class="upload-filename"
-            id="dineInFilename"
-            style="display: none"
-          ></div>
+          <div class="upload-filename" id="dineInFilename" style="display: none"></div>
         </div>
 
         <div class="glass-card config-section">
-          <div class="config-label" style="margin-bottom: 10px">
-            🚫 Non-Food / Non-Eatable Item Keywords (editable)
-          </div>
-          <div class="config-hint" style="margin-bottom: 12px">
-            One term per line. Matching is <b>whole-word</b> — it catches items
-            like "Extra Tissue Paper" or "Packing Charge - Small" too. Add,
-            remove, or edit lines to fit your menu. Some short/common words
-            (e.g. "Bowl", "Cup", "Glass", "Straw") can occasionally match a real
-            dish name (like "Rice Bowl") — remove them from the list below if
-            that applies to your menu.
-          </div>
+          <div class="config-label" style="margin-bottom: 10px">🚫 Non-Food / Non-Eatable Item Keywords (editable)</div>
+          <div class="config-hint" style="margin-bottom: 12px">One term per line. Matching is <b>whole-word</b> — it catches items like "Extra Tissue Paper" or "Packing Charge - Small" too. Add, remove, or edit lines to fit your menu. Some short/common words (e.g. "Bowl", "Cup", "Glass", "Straw") can occasionally match a real dish name (like "Rice Bowl") — remove them from the list below if that applies to your menu.</div>
           <textarea id="nonFoodKeywords" spellcheck="false"></textarea>
         </div>
 
-        <div
-          class="stats-grid"
-          style="grid-template-columns: repeat(3, 1fr); margin-bottom: 20px"
-        >
+        <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 20px">
           <div class="glass-card stat-card">
             <div class="stat-value" id="statDineInTotal">0</div>
             <div class="stat-label">Total Items</div>
@@ -977,13 +860,9 @@
         </div>
 
         <div class="controls">
-          <button class="btn btn-primary" id="dineInProcessBtn" disabled>
-            ⚡ Process Dine-in Menu
-          </button>
+          <button class="btn btn-primary" id="dineInProcessBtn" disabled>⚡ Process Dine-in Menu</button>
           <button class="btn btn-secondary" id="dineInResetBtn">↺ Reset</button>
-          <button class="btn btn-success" id="dineInDownloadBtn" disabled>
-            ⬇ Download Processed CSV
-          </button>
+          <button class="btn btn-success" id="dineInDownloadBtn" disabled>⬇ Download Processed CSV</button>
         </div>
 
         <div class="glass-card progress-section" id="dineInProgressSection">
@@ -1001,10 +880,7 @@
             <div class="check-icon">✓</div>
             <h2>Dine-in Menu Processed</h2>
           </div>
-          <div
-            class="result-summary"
-            style="grid-template-columns: repeat(3, 1fr)"
-          >
+          <div class="result-summary" style="grid-template-columns: repeat(3, 1fr)">
             <div class="result-item">
               <div class="val" id="dineInResTotal">0</div>
               <div class="lbl">Total Items</div>
@@ -1020,10 +896,7 @@
           </div>
           <div class="section-title">🚫 Items Marked Available = No</div>
           <div style="margin-bottom: 10px">
-            <label class="mark-yes-label"
-              ><input type="checkbox" id="selectAllYesCheckbox" /> Mark All as
-              Yes</label
-            >
+            <label class="mark-yes-label"><input type="checkbox" id="selectAllYesCheckbox" /> Mark All as Yes</label>
           </div>
           <div class="table-wrap">
             <table>
@@ -1044,89 +917,41 @@
 
       <div id="page-areasheet" class="page">
         <div class="controls" style="margin-bottom: 24px">
-          <button class="btn btn-secondary" id="backToMergeBtn2">
-            ← Back to Merge Tool
-          </button>
+          <button class="btn btn-secondary" id="backToMergeBtn2">← Back to Merge Tool</button>
         </div>
 
         <!-- ============ AREA-WISE PRICE SHEET SECTION ============ -->
         <div class="glass-card info-banner">
           <span class="ic">📍</span>
-          <div>
-            <b>Item Area-wise Price Sheet</b> — for sheets with multiple
-            area/channel price columns side by side (e.g. AC/Dine-in, Zomato or
-            Swiggy, Easy Cater), each followed immediately by its own Available
-            column. For every row: <b>Easy Cater's price</b> is copied from the
-            <b>AC (Dine-in) price column</b>, and
-            <b>Easy Cater's Available</b> is copied from the
-            <b>Zomato/Swiggy Available column</b> (the column right after
-            whichever area column you pick below). Applies to the whole sheet,
-            top to bottom.
-          </div>
+          <div><b>Item Area-wise Price Sheet</b> — for sheets with multiple area/channel price columns side by side (e.g. AC/Dine-in, Zomato or Swiggy, Easy Cater), each followed immediately by its own Available column. For every row: <b>Easy Cater's price</b> is copied from the <b>AC (Dine-in) price column</b>, and <b>Easy Cater's Available</b> is copied from the <b>Zomato/Swiggy Available column</b> (the column right after whichever area column you pick below). Applies to the whole sheet, top to bottom.</div>
         </div>
 
-        <div
-          class="glass-card upload-card"
-          id="areaSheetCard"
-          style="max-width: 500px; margin: 0 auto 24px"
-        >
+        <div class="glass-card upload-card" id="areaSheetCard" style="max-width: 500px; margin: 0 auto 24px">
           <input type="file" id="areaSheetInput" accept=".csv" />
           <span class="upload-icon">📍</span>
           <div class="upload-title">Area-wise Price Sheet CSV</div>
           <div class="upload-sub">Drag &amp; drop or click to upload</div>
-          <div
-            class="upload-filename"
-            id="areaSheetFilename"
-            style="display: none"
-          ></div>
+          <div class="upload-filename" id="areaSheetFilename" style="display: none"></div>
         </div>
 
-        <div
-          class="glass-card config-section"
-          id="areaSheetPickerSection"
-          style="display: none"
-        >
-          <div class="config-label" style="margin-bottom: 14px">
-            🎯 Column Picker
-          </div>
-          <div class="config-hint" style="margin-bottom: 16px">
-            Pick the 3 area columns below. The "Available" column for each is
-            assumed to be the column immediately to its right (e.g. picking
-            "Zomato" uses the very next column as Zomato's Available).
-          </div>
+        <div class="glass-card config-section" id="areaSheetPickerSection" style="display: none">
+          <div class="config-label" style="margin-bottom: 14px">🎯 Column Picker</div>
+          <div class="config-hint" style="margin-bottom: 16px">Pick the 3 area columns below. The "Available" column for each is assumed to be the column immediately to its right (e.g. picking "Zomato" uses the very next column as Zomato's Available).</div>
           <div class="picker-row">
-            <label for="acColumnSelect"
-              >AC / Dine-in Price Column
-              <span class="picker-sub"
-                >(source for Easy Cater price)</span
-              ></label
-            >
+            <label for="acColumnSelect">AC / Dine-in Price Column <span class="picker-sub">(source for Easy Cater price)</span></label>
             <select id="acColumnSelect"></select>
           </div>
           <div class="picker-row">
-            <label for="zomatoColumnSelect"
-              >Zomato / Swiggy Price Column
-              <span class="picker-sub"
-                >(its next column = Available source)</span
-              ></label
-            >
+            <label for="zomatoColumnSelect">Zomato / Swiggy Price Column <span class="picker-sub">(its next column = Available source)</span></label>
             <select id="zomatoColumnSelect"></select>
           </div>
           <div class="picker-row">
-            <label for="easyCaterColumnSelect"
-              >Easy Cater Price Column
-              <span class="picker-sub"
-                >(target — its next column = Available target)</span
-              ></label
-            >
+            <label for="easyCaterColumnSelect">Easy Cater Price Column <span class="picker-sub">(target — its next column = Available target)</span></label>
             <select id="easyCaterColumnSelect"></select>
           </div>
         </div>
 
-        <div
-          class="stats-grid"
-          style="grid-template-columns: repeat(2, 1fr); margin-bottom: 20px"
-        >
+        <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr); margin-bottom: 20px">
           <div class="glass-card stat-card">
             <div class="stat-value" id="statAreaSheetTotal">0</div>
             <div class="stat-label">Total Rows</div>
@@ -1138,15 +963,9 @@
         </div>
 
         <div class="controls">
-          <button class="btn btn-primary" id="areaSheetProcessBtn" disabled>
-            ⚡ Sync Easy Cater Columns
-          </button>
-          <button class="btn btn-secondary" id="areaSheetResetBtn">
-            ↺ Reset
-          </button>
-          <button class="btn btn-success" id="areaSheetDownloadBtn" disabled>
-            ⬇ Download Processed CSV
-          </button>
+          <button class="btn btn-primary" id="areaSheetProcessBtn" disabled>⚡ Sync Easy Cater Columns</button>
+          <button class="btn btn-secondary" id="areaSheetResetBtn">↺ Reset</button>
+          <button class="btn btn-success" id="areaSheetDownloadBtn" disabled>⬇ Download Processed CSV</button>
         </div>
 
         <div class="glass-card progress-section" id="areaSheetProgressSection">
@@ -1164,10 +983,7 @@
             <div class="check-icon">✓</div>
             <h2>Area-wise Price Sheet Synced</h2>
           </div>
-          <div
-            class="result-summary"
-            style="grid-template-columns: repeat(2, 1fr)"
-          >
+          <div class="result-summary" style="grid-template-columns: repeat(2, 1fr)">
             <div class="result-item">
               <div class="val" id="areaSheetResTotal">0</div>
               <div class="lbl">Total Rows</div>
@@ -1223,20 +1039,7 @@
       const REQUIRED_ONLINE = ["item name", "price", "available"];
 
       // Final output header order (Online Menu structure)
-      const FINAL_HEADERS = [
-        "Item ID",
-        "Category",
-        "Item Name",
-        "Variation",
-        "Online Display Name",
-        "Area Display Name",
-        "Item Type",
-        "Price",
-        "Description",
-        "Dietary",
-        "Available",
-        "Goods/Services",
-      ];
+      const FINAL_HEADERS = ["Item ID", "Category", "Item Name", "Variation", "Online Display Name", "Area Display Name", "Item Type", "Price", "Description", "Dietary", "Available", "Goods/Services"];
 
       /* ======================================================================
    DOM REFERENCES
@@ -1260,9 +1063,7 @@
         mergeBtn: document.getElementById("mergeBtn"),
         resetBtn: document.getElementById("resetBtn"),
         downloadFinalBtn: document.getElementById("downloadFinalBtn"),
-        downloadOfflineOnlyBtn: document.getElementById(
-          "downloadOfflineOnlyBtn",
-        ),
+        downloadOfflineOnlyBtn: document.getElementById("downloadOfflineOnlyBtn"),
         downloadNotFoundBtn: document.getElementById("downloadNotFoundBtn"),
 
         progressSection: document.getElementById("progressSection"),
@@ -1325,14 +1126,10 @@
       // Fully removes a column (by name, case-insensitive) from parsed CSV data if present.
       // Returns { headers, rows } unchanged if the column doesn't exist.
       function removeColumnIfExists(parsed, columnName) {
-        const idx = parsed.headers.findIndex(
-          (h) => normalizeName(h) === normalizeName(columnName),
-        );
+        const idx = parsed.headers.findIndex((h) => normalizeName(h) === normalizeName(columnName));
         if (idx === -1) return parsed;
         const newHeaders = parsed.headers.filter((_, i) => i !== idx);
-        const newRows = parsed.rows.map((row) =>
-          row.filter((_, i) => i !== idx),
-        );
+        const newRows = parsed.rows.map((row) => row.filter((_, i) => i !== idx));
         return { headers: newHeaders, rows: newRows };
       }
 
@@ -1353,10 +1150,7 @@
         const lowerCode = trimmedCode.toLowerCase();
 
         if (lowerName.endsWith(lowerCode)) {
-          let cleaned = trimmedName.slice(
-            0,
-            trimmedName.length - trimmedCode.length,
-          );
+          let cleaned = trimmedName.slice(0, trimmedName.length - trimmedCode.length);
           cleaned = cleaned.replace(/\s+$/, ""); // trim trailing space left behind
           return { cleaned, wasStripped: true };
         }
@@ -1437,14 +1231,11 @@
           rows.push(row);
         }
 
-        while (rows.length && rows[rows.length - 1].every((c) => c === ""))
-          rows.pop();
+        while (rows.length && rows[rows.length - 1].every((c) => c === "")) rows.pop();
         if (rows.length === 0) return { headers: [], rows: [] };
 
         const headers = rows[0].map((h) => h.trim());
-        const dataRows = rows
-          .slice(1)
-          .filter((r) => !(r.length === 1 && r[0] === ""));
+        const dataRows = rows.slice(1).filter((r) => !(r.length === 1 && r[0] === ""));
         return { headers, rows: dataRows };
       }
 
@@ -1505,10 +1296,7 @@
           const text = await readFileAsText(file);
           const parsed = removeColumnIfExists(parseCSV(text), "Markup Price");
           if (!validateHeaders(parsed.headers, REQUIRED_OFFLINE)) {
-            showToast(
-              "Invalid Offline CSV: missing Item Name or Price column",
-              "error",
-            );
+            showToast("Invalid Offline CSV: missing Item Name or Price column", "error");
             return;
           }
           state.offlineData = parsed;
@@ -1534,10 +1322,7 @@
           const text = await readFileAsText(file);
           const parsed = removeColumnIfExists(parseCSV(text), "Markup Price");
           if (!validateHeaders(parsed.headers, REQUIRED_ONLINE)) {
-            showToast(
-              "Invalid Online CSV: missing Item Name, Price or Available column",
-              "error",
-            );
+            showToast("Invalid Online CSV: missing Item Name, Price or Available column", "error");
             return;
           }
           state.onlineData = parsed;
@@ -1580,17 +1365,11 @@
    STATISTICS UPDATE
 ====================================================================== */
       function updateStats() {
-        el.statOffline.textContent = state.offlineData
-          ? state.offlineData.rows.length
-          : 0;
-        el.statOnline.textContent = state.onlineData
-          ? state.onlineData.rows.length
-          : 0;
+        el.statOffline.textContent = state.offlineData ? state.offlineData.rows.length : 0;
+        el.statOnline.textContent = state.onlineData ? state.onlineData.rows.length : 0;
         el.statMatched.textContent = state.matchedCount;
         el.statOfflineOnly.textContent = state.offlineOnlyCount;
-        el.statFinalTotal.textContent = state.finalRows
-          ? state.finalRows.length
-          : 0;
+        el.statFinalTotal.textContent = state.finalRows ? state.finalRows.length : 0;
         el.statSuffixStripped.textContent = state.suffixStrippedCount;
       }
 
@@ -1671,23 +1450,16 @@
           });
 
           const rawItemName = getCell(srcRow, nName);
-          const { cleaned: itemName, wasStripped } = stripSuffixCode(
-            rawItemName,
-            suffixCode,
-          );
+          const { cleaned: itemName, wasStripped } = stripSuffixCode(rawItemName, suffixCode);
           if (wasStripped) suffixStripped++;
           const key = normalizeName(itemName);
           seenNames.add(key);
 
           // write the cleaned (suffix-free) name into the final Item Name column
-          const nameColIdx = FINAL_HEADERS.findIndex(
-            (h) => normalizeName(h) === "item name",
-          );
+          const nameColIdx = FINAL_HEADERS.findIndex((h) => normalizeName(h) === "item name");
           newRow[nameColIdx] = itemName;
 
-          const priceColIdx = FINAL_HEADERS.findIndex(
-            (h) => normalizeName(h) === "price",
-          );
+          const priceColIdx = FINAL_HEADERS.findIndex((h) => normalizeName(h) === "price");
           if (offlineMap.has(key)) {
             const offRow = offlineMap.get(key);
             newRow[priceColIdx] = getCell(offRow, oPrice);
@@ -1701,12 +1473,8 @@
 
         setProgress(80, "Adding Offline-Only Items...");
         const offlineOnly = [];
-        const availColIdx = FINAL_HEADERS.findIndex(
-          (h) => normalizeName(h) === "available",
-        );
-        const priceColIdx2 = FINAL_HEADERS.findIndex(
-          (h) => normalizeName(h) === "price",
-        );
+        const availColIdx = FINAL_HEADERS.findIndex((h) => normalizeName(h) === "available");
+        const priceColIdx2 = FINAL_HEADERS.findIndex((h) => normalizeName(h) === "price");
 
         for (let i = 0; i < offlineRows.length; i++) {
           const r = offlineRows[i];
@@ -1720,10 +1488,7 @@
           newRow[FINAL_HEADERS.indexOf("Category")] = getCell(r, oCat);
           newRow[FINAL_HEADERS.indexOf("Item Name")] = itemName;
           newRow[FINAL_HEADERS.indexOf("Variation")] = getCell(r, oVar);
-          newRow[FINAL_HEADERS.indexOf("Online Display Name")] = getCell(
-            r,
-            oDisp,
-          );
+          newRow[FINAL_HEADERS.indexOf("Online Display Name")] = getCell(r, oDisp);
           newRow[FINAL_HEADERS.indexOf("Area Display Name")] = ""; // not present offline
           newRow[FINAL_HEADERS.indexOf("Item Type")] = getCell(r, oType);
           newRow[priceColIdx2] = getCell(r, oPrice);
@@ -1762,10 +1527,7 @@
 
         showToast("Merge Completed", "success");
         if (suffixCode && suffixStripped > 0) {
-          showToast(
-            `Stripped "${suffixCode}" from ${suffixStripped} online item name(s)`,
-            "info",
-          );
+          showToast(`Stripped "${suffixCode}" from ${suffixStripped} online item name(s)`, "info");
         } else if (suffixCode && suffixStripped === 0) {
           showToast(`No online item names ended with "${suffixCode}"`, "info");
         }
@@ -1814,24 +1576,20 @@
       function escapeCSVField(value) {
         if (value === undefined || value === null) value = "";
         value = String(value);
-        if (/[",\n\r]/.test(value))
-          return '"' + value.replace(/"/g, '""') + '"';
+        if (/[",\n\r]/.test(value)) return '"' + value.replace(/"/g, '""') + '"';
         return value;
       }
 
       function generateFinalCSV() {
         const lines = [FINAL_HEADERS.map(escapeCSVField).join(",")];
-        for (const row of state.finalRows)
-          lines.push(row.map(escapeCSVField).join(","));
+        for (const row of state.finalRows) lines.push(row.map(escapeCSVField).join(","));
         return lines.join("\r\n");
       }
 
       function generateOfflineOnlyCSV() {
         const lines = ["Item Name,Price"];
         for (const item of state.offlineOnlyList) {
-          lines.push(
-            `${escapeCSVField(item.name)},${escapeCSVField(item.price)}`,
-          );
+          lines.push(`${escapeCSVField(item.name)},${escapeCSVField(item.price)}`);
         }
         return lines.join("\r\n");
       }
@@ -1839,9 +1597,7 @@
       function generateNotFoundCSV() {
         const lines = ["Item Name,Online Price (Kept)"];
         for (const item of state.notFoundList) {
-          lines.push(
-            `${escapeCSVField(item.name)},${escapeCSVField(item.price)}`,
-          );
+          lines.push(`${escapeCSVField(item.name)},${escapeCSVField(item.price)}`);
         }
         return lines.join("\r\n");
       }
@@ -1869,19 +1625,13 @@
 
       el.downloadOfflineOnlyBtn.addEventListener("click", () => {
         if (!state.offlineOnlyList) return;
-        downloadTextAsFile(
-          generateOfflineOnlyCSV(),
-          "offline_only_added_items.csv",
-        );
+        downloadTextAsFile(generateOfflineOnlyCSV(), "offline_only_added_items.csv");
         showToast("Download Ready", "success");
       });
 
       el.downloadNotFoundBtn.addEventListener("click", () => {
         if (!state.notFoundList) return;
-        downloadTextAsFile(
-          generateNotFoundCSV(),
-          "online_items_no_offline_price.csv",
-        );
+        downloadTextAsFile(generateNotFoundCSV(), "online_items_no_offline_price.csv");
         showToast("Download Ready", "success");
       });
 
@@ -2452,12 +2202,30 @@
       function findNonFoodMatch(itemName, keywords) {
         const normalized = normalizeName(itemName);
         if (normalized === "") return null;
+
+        // Generic keywords that should match ONLY when the whole item name is exactly the keyword
+        const EXACT_MATCH_ONLY = new Set(["plate", "quarter", "half", "full", "bowl", "cup", "glass"]);
+
         for (const kw of keywords) {
           const normKw = normalizeName(kw);
           if (normKw === "") continue;
+
+          // Exact-only keywords
+          if (EXACT_MATCH_ONLY.has(normKw)) {
+            if (normalized === normKw) {
+              return kw;
+            }
+            continue;
+          }
+
+          // Existing whole-word matching for all other keywords
           const pattern = new RegExp("\\b" + escapeRegExp(normKw) + "\\b", "i");
-          if (pattern.test(normalized)) return kw;
+
+          if (pattern.test(normalized)) {
+            return kw;
+          }
         }
+
         return null;
       }
 
@@ -2470,10 +2238,7 @@
           const text = await readFileAsText(file);
           const parsed = removeColumnIfExists(parseCSV(text), "Markup Price");
           if (!validateHeaders(parsed.headers, ["item name", "price"])) {
-            showToast(
-              "Invalid Dine-in CSV: missing Item Name or Price column",
-              "error",
-            );
+            showToast("Invalid Dine-in CSV: missing Item Name or Price column", "error");
             return;
           }
           dineInState.fileData = parsed;
@@ -2515,15 +2280,11 @@
         await sleep(150);
 
         dineEl.progressFill.style.width = "40%";
-        dineEl.progressStatus.textContent =
-          "Inserting Area Display Name Column...";
+        dineEl.progressStatus.textContent = "Inserting Area Display Name Column...";
         // Build final headers: insert "Area Display Name" right after "Online Display Name"
-        const onlineDisplayPos = origHeaders.findIndex(
-          (h) => normalizeName(h) === "online display name",
-        );
+        const onlineDisplayPos = origHeaders.findIndex((h) => normalizeName(h) === "online display name");
         const finalHeaders = [...origHeaders];
-        let insertAt =
-          onlineDisplayPos !== -1 ? onlineDisplayPos + 1 : finalHeaders.length;
+        let insertAt = onlineDisplayPos !== -1 ? onlineDisplayPos + 1 : finalHeaders.length;
         finalHeaders.splice(insertAt, 0, "Area Display Name");
         await sleep(150);
 
@@ -2536,8 +2297,7 @@
         await sleep(150);
 
         dineEl.progressFill.style.width = "80%";
-        dineEl.progressStatus.textContent =
-          "Flagging Non-Food & Zero-Price Items...";
+        dineEl.progressStatus.textContent = "Flagging Non-Food & Zero-Price Items...";
 
         // Pre-compute: for every "item" row, does it have "variation" rows directly below it,
         // and are ALL of those variations zero-priced? The parent is only zero-price-flagged
@@ -2552,10 +2312,7 @@
             let j = i + 1;
             let found = false;
             let allZero = true;
-            while (
-              j < rows.length &&
-              normalizeName(getCell(rows[j], itemTypeIdx)) === "variation"
-            ) {
+            while (j < rows.length && normalizeName(getCell(rows[j], itemTypeIdx)) === "variation") {
               found = true;
               const p = parseFloat(getCell(rows[j], priceIdx));
               const isZero = !isNaN(p) && p === 0;
@@ -2586,10 +2343,7 @@
           let zeroPriceHit = false;
           let isGroupZero = false;
           if (priceIdx !== undefined) {
-            const rowType =
-              itemTypeIdx !== undefined
-                ? normalizeName(getCell(srcRow, itemTypeIdx))
-                : "";
+            const rowType = itemTypeIdx !== undefined ? normalizeName(getCell(srcRow, itemTypeIdx)) : "";
             if (rowType === "item" && hasVariationBelow[i]) {
               zeroPriceHit = allVariationsZero[i];
               isGroupZero = zeroPriceHit;
@@ -2599,19 +2353,12 @@
             }
           }
 
-          const reason = matchedKeyword
-            ? matchedKeyword
-            : zeroPriceHit
-              ? isGroupZero
-                ? "Zero Price (All Variations)"
-                : "Zero Price"
-              : null;
+          const reason = matchedKeyword ? matchedKeyword : zeroPriceHit ? (isGroupZero ? "Zero Price (All Variations)" : "Zero Price") : null;
 
           if (reason) {
             // Available column index shifts by +1 if it was after the insert point
             let finalAvailIdx = availIdx;
-            if (finalAvailIdx !== undefined && finalAvailIdx >= insertAt)
-              finalAvailIdx += 1;
+            if (finalAvailIdx !== undefined && finalAvailIdx >= insertAt) finalAvailIdx += 1;
             if (finalAvailIdx !== undefined) {
               newRow[finalAvailIdx] = "No";
             }
@@ -2687,22 +2434,19 @@
         toggleDineInAvailability(idx, e.target.checked);
       });
 
-      document
-        .getElementById("selectAllYesCheckbox")
-        .addEventListener("change", (e) => {
-          const checked = e.target.checked;
-          document.querySelectorAll(".markYesCheckbox").forEach((cb) => {
-            if (cb.disabled) return;
-            cb.checked = checked;
-            const idx = parseInt(cb.getAttribute("data-marked-idx"), 10);
-            toggleDineInAvailability(idx, checked);
-          });
+      document.getElementById("selectAllYesCheckbox").addEventListener("change", (e) => {
+        const checked = e.target.checked;
+        document.querySelectorAll(".markYesCheckbox").forEach((cb) => {
+          if (cb.disabled) return;
+          cb.checked = checked;
+          const idx = parseInt(cb.getAttribute("data-marked-idx"), 10);
+          toggleDineInAvailability(idx, checked);
         });
+      });
 
       function generateDineInCSV() {
         const lines = [dineInState.finalHeaders.map(escapeCSVField).join(",")];
-        for (const row of dineInState.finalRows)
-          lines.push(row.map(escapeCSVField).join(","));
+        for (const row of dineInState.finalRows) lines.push(row.map(escapeCSVField).join(","));
         return lines.join("\r\n");
       }
 
@@ -2810,28 +2554,20 @@
       }
 
       function populateAreaSheetColumnPickers(headers) {
-        const optionsHtml = headers
-          .map(
-            (h, i) =>
-              `<option value="${i}">${i + 1}: ${escapeHtml(h || "(unnamed)")}</option>`,
-          )
-          .join("");
+        const optionsHtml = headers.map((h, i) => `<option value="${i}">${i + 1}: ${escapeHtml(h || "(unnamed)")}</option>`).join("");
         areaEl.acSelect.innerHTML = optionsHtml;
         areaEl.zomatoSelect.innerHTML = optionsHtml;
         areaEl.easyCaterSelect.innerHTML = optionsHtml;
 
         // best-effort auto-guess based on header text, user can still override
-        const guess = (needle) =>
-          headers.findIndex((h) => normalizeName(h).includes(needle));
+        const guess = (needle) => headers.findIndex((h) => normalizeName(h).includes(needle));
         const acGuess = guess("ac");
-        const zomatoGuess =
-          guess("zomato") !== -1 ? guess("zomato") : guess("swiggy");
+        const zomatoGuess = guess("zomato") !== -1 ? guess("zomato") : guess("swiggy");
         const easyCaterGuess = guess("easy cater");
 
         if (acGuess !== -1) areaEl.acSelect.value = acGuess;
         if (zomatoGuess !== -1) areaEl.zomatoSelect.value = zomatoGuess;
-        if (easyCaterGuess !== -1)
-          areaEl.easyCaterSelect.value = easyCaterGuess;
+        if (easyCaterGuess !== -1) areaEl.easyCaterSelect.value = easyCaterGuess;
       }
 
       setupDropZone(areaEl.card, areaEl.input, handleAreaSheetFile);
@@ -2851,18 +2587,12 @@
         const easyCaterAvailIdx = easyCaterIdx + 1;
 
         if (zomatoAvailIdx >= headers.length) {
-          showToast(
-            "Zomato/Swiggy column has no column after it for Available — pick a different column",
-            "error",
-          );
+          showToast("Zomato/Swiggy column has no column after it for Available — pick a different column", "error");
           areaEl.processBtn.disabled = false;
           return;
         }
         if (easyCaterAvailIdx >= headers.length) {
-          showToast(
-            "Easy Cater column has no column after it for Available — pick a different column",
-            "error",
-          );
+          showToast("Easy Cater column has no column after it for Available — pick a different column", "error");
           areaEl.processBtn.disabled = false;
           return;
         }
@@ -2909,11 +2639,7 @@
         showToast("Easy Cater Columns Synced", "success");
       }
 
-      function displayAreaSheetResults(
-        elapsedMs,
-        easyCaterIdx,
-        easyCaterAvailIdx,
-      ) {
+      function displayAreaSheetResults(elapsedMs, easyCaterIdx, easyCaterAvailIdx) {
         areaEl.resultSection.classList.add("active");
         areaEl.resTotal.textContent = areaSheetState.totalCount;
         areaEl.resTime.textContent = elapsedMs + "ms";
@@ -2926,8 +2652,7 @@
           const frag = document.createDocumentFragment();
           preview.forEach((row, i) => {
             const tr = document.createElement("tr");
-            const label =
-              row[0] !== undefined && row[0] !== "" ? row[0] : `Row ${i + 1}`;
+            const label = row[0] !== undefined && row[0] !== "" ? row[0] : `Row ${i + 1}`;
             tr.innerHTML = `<td>${i + 1}</td><td>${escapeHtml(label)}</td><td>${escapeHtml(getCell(row, easyCaterIdx))}</td><td>${escapeHtml(getCell(row, easyCaterAvailIdx))}</td>`;
             frag.appendChild(tr);
           });
@@ -2938,17 +2663,13 @@
       function generateAreaSheetCSV() {
         const headers = areaSheetState.fileData.headers;
         const lines = [headers.map(escapeCSVField).join(",")];
-        for (const row of areaSheetState.finalRows)
-          lines.push(row.map(escapeCSVField).join(","));
+        for (const row of areaSheetState.finalRows) lines.push(row.map(escapeCSVField).join(","));
         return lines.join("\r\n");
       }
 
       areaEl.processBtn.addEventListener("click", () => {
         if (!areaSheetState.fileData) {
-          showToast(
-            "Please upload the Area-wise Price Sheet CSV first",
-            "error",
-          );
+          showToast("Please upload the Area-wise Price Sheet CSV first", "error");
           return;
         }
         runAreaSheetProcess();
@@ -2956,10 +2677,7 @@
 
       areaEl.downloadBtn.addEventListener("click", () => {
         if (!areaSheetState.finalRows) return;
-        downloadTextAsFile(
-          generateAreaSheetCSV(),
-          "area_wise_price_sheet_synced.csv",
-        );
+        downloadTextAsFile(generateAreaSheetCSV(), "area_wise_price_sheet_synced.csv");
         showToast("Download Ready", "success");
       });
 
