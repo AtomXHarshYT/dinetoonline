@@ -2198,32 +2198,17 @@
         return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       }
 
-      // Whole-word match: returns the matching keyword or null
       function findNonFoodMatch(itemName, keywords) {
         const normalized = normalizeName(itemName);
         if (normalized === "") return null;
-
-        // Generic keywords that should match ONLY when the whole item name is exactly the keyword
-        const EXACT_MATCH_ONLY = new Set(["plate", "quarter", "half", "full", "bowl", "cup", "glass"]);
 
         for (const kw of keywords) {
           const normKw = normalizeName(kw);
           if (normKw === "") continue;
 
-          // Exact-only keywords
-          if (EXACT_MATCH_ONLY.has(normKw)) {
-            if (normalized === normKw) {
-              return kw;
-            }
-            continue;
-          }
-
-          // Existing whole-word matching for all other keywords
           const pattern = new RegExp("\\b" + escapeRegExp(normKw) + "\\b", "i");
 
-          if (pattern.test(normalized)) {
-            return kw;
-          }
+          if (pattern.test(normalized)) return kw;
         }
 
         return null;
